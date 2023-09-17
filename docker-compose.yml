@@ -1,0 +1,47 @@
+services:
+  bot_garage_app:
+    container_name: bot_garage_web
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4080:8080"
+    depends_on:
+      - bot_garage_database
+    environment:
+      DB_USER: admin
+      DB_PASSWORD: ${DB_SECRET}
+      DB_HOST: bot_garage_database
+      DB_PORT: 27017
+      ADMIN_USER_NAME: admin
+      ADMIN_USER_PASSWORD: admin_example
+    command: ["npm", "run", "app"]
+    networks:
+      - bot_garage_net
+  
+  bot_garage_database:
+    container_name: bot_garage_mongo_db
+    image: mongo:4.4.18
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_SECRET}
+    ports:
+      - "27017:27017"
+    volumes:
+      - bot_garage_db_data:/data/db
+      - bot_garage_db_config:/data/configdb
+    networks:
+      - bot_garage_net
+
+volumes:
+  bot_garage_db_data:
+    name: bot_garage_db_data
+  bot_garage_db_config:
+    name: bot_garage_db_config
+
+networks:
+  bot_garage_net:
+    driver: bridge
+    name: bot_garage_net

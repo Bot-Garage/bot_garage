@@ -1,0 +1,47 @@
+@import "vars.less";
+
+#bot-list{
+    .bot{
+        display: flex;
+        flex-direction: row;
+        background-color: darken(@card-background, 5);
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 5px;
+
+        transition: background-color 200ms;
+
+        .icon{
+            display: inline-block;
+            text-align: center;
+            padding: 15px;
+            
+            background-color: grey;
+            border-radius: 50%;
+
+            color: white;
+        }
+        .right{
+            padding: 0 10px;
+            display: inline-block;
+            vertical-align: middle;
+            width: auto;
+            flex-grow: 1;
+            color: white;
+            .name{
+                text-decoration: none;
+                font-weight: bold;
+                font-size: 1.2rem;
+            }
+        }
+
+        &:first-of-type{
+            margin-top: 0;
+        }
+
+        &:hover{
+            background-color: darken(@background-color, 3);
+            cursor: pointer;
+        }
+    }
+}

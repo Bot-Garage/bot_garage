@@ -1,0 +1,32 @@
+extends _template
+
+block body
+    .row
+        .col-6
+            .card
+                .card-title General Settings
+                .card-body
+                    form.form-control(name="user_profile_settings" user_id=session.user._id)
+                        label(for="name") Username:
+                        input(required type="text" name="name" placeholder="Username" value=session.user.name)
+
+                        label(for="email") Email Address:
+                        input(required type="text" name="email" placeholder="user@example.com" value=session.user.email)
+
+                        button(type="submit").btn-block.btn-success Save
+            .card
+                .card-title Update Password
+                .card-body
+                    form.form-control(name="user_change_password" user_id=session.user._id)
+                        label(for="password") Password:
+                        input(required type="password" name="password" placeholder="Password")
+
+                        label(for="password_confirmation") Password Confirmation:
+                        input(required type="password" name="password_confirmation" placeholder="Password Confirmation")
+
+                        button(type="submit").btn-block.btn-success Update Password
+
+block css
+
+block js
+    script(src="/public/js/profile.js")

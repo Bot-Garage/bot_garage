@@ -1,0 +1,84 @@
+extends _template
+
+block css
+    link(rel="stylesheet" href="/public/css/bots.css")
+
+block body
+    main
+        .container
+            .row
+                .col-3 <!-- Sidebar -->
+                    .card <!-- Card: Create New Bot -->
+                        .card-title Create New Bot
+                        .card-body
+                            form(name="BotCreate").form-control <!-- Form: Create Bot -->
+                                label(for="bot_name") Bot Name:
+                                input(type="text" name="bot_name" placeholder="Bot Name")
+
+                                input(type="submit" value="Create Bot")
+
+                    .card <!-- Bot List -->
+                        .card-title Your Bots
+                        .card-body-skinny
+                            #bot-list
+                                if bots
+                                    for bot in bots
+                                        a(data-bot-id=bot._id).bot
+                                            .icon
+                                                i.fa-fw.fa-solid.fa-user
+                                            .right
+                                                span.name #{bot.name}
+                                                    span.bot-status(data-running=`${bot.started}` data-bot-id=`${bot._id}`)
+                .col-9 <!-- Content  -->
+                    #BotInfo.card.hidden <!-- Bot Information / Status  -->
+                        .card-title Bot Information
+                        .card-body
+                            div <!-- Bot Information -->
+                                h1.inline-block#BotName
+                                span.bot-status#BotStatus
+
+                            div#BotActions.top-pad-20 <!-- Bot Actions --> 
+                                a(data-bot-id="" data-action="start").btn.btn-success <i class="fa fa-play"></i>Start
+                                a(data-bot-id="" data-action="stop").btn.btn-warning <i class="fa fa-stop"></i> Stop
+                                a(data-bot-id="" data-action="delete" data-tooltip="WARNING! This is permanent!").btn.btn-danger <i class="fa fa-trash"></i> Delete
+
+                            .row 
+                                .col-6 <!-- Column - General Settings -->
+                                    div.panel(name="General Settings") <!-- Panel - General Settings -->
+                                        form(name="bot_general_settings").form-control
+                                            label(for="name") Name:
+                                            input(type="text" name="name" placeholder="Bot Name")
+
+                                            label(for="personality") Personality:
+                                            select(name="personality")
+                                                if personalities
+                                                    for personality in personalities
+                                                        option(value=personality.id) #{personality.name}
+
+                                            input(type="submit" value="Save")
+
+                            .row <!-- Row - Discord / OpenAI Settings --> 
+                                .col-6 <!-- Column - Discord Settings --> 
+                                    div.panel(name="Discord Settings") <!-- Panel - Discord Settings --> 
+                                        form(name="bot_discord_settings").form-control
+                                            label(for="discord_client_token") Discord Client Token
+                                            input(type="password" name="discord_client_token" placeholder="Discord Client Token")
+
+                                            label(for="discord_app_id") Discord App ID
+                                            input(type="text" name="discord_app_id" placeholder="Discord App ID")
+
+                                            input(type="submit" value="Save")
+
+                                .col-6 <!-- Column - OpenAI Settings --> 
+                                    div.panel(name="OpenAI Settings") <!-- Panel - OpenAI Settings --> 
+                                        form(name="bot_openai_settings").form-control
+                                            label(for="openai_api_key") OpenAI API Key
+                                            input(type="password" name="openai_api_key" placeholder="OpenAI API Key")
+
+                                            label(for="openai_org_id") OpenAI Organization ID
+                                            input(type="text" name="openai_org_id" placeholder="OpenAI Organization ID")
+
+                                            input(type="submit" value="Save")
+
+block js
+    script(src="/public/js/bots.js")

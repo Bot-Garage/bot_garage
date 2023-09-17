@@ -1,0 +1,446 @@
+@import "vars.less";
+
+body{
+    font-family: "Lato", sans-serif;
+    background-color: @background-color;
+    color: white;
+
+    position: relative;
+    top: @header-height;
+}
+
+*, *::before, *::after{
+    box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6{
+    margin: 0;
+    padding: 0;
+}
+
+.justify-center{ justify-content: center }
+
+.float-left{ float: left }
+.float-right{ float: right }
+
+.clear-left{ clear: left }
+.clear-right{ clear: right }
+.clear-both{ clear: both }
+
+.hidden{ display: none }
+.block{ display: block }
+.inline-block{ display: inline-block }
+.flex{ display: flex }
+.inline-flex{ display: inline-flex }
+
+.top-pad-5 { margin-top: 5px };
+.top-pad-10 { margin-top: 10px };
+.top-pad-15 { margin-top: 15px };
+.top-pad-20 { margin-top: 20px };
+.top-pad-25 { margin-top: 25px };
+
+a{
+    color: @info;
+    cursor: pointer;
+}
+
+header{
+    display: flex;
+    flex-direction: row;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    
+    width: 100%;
+    height: @header-height;
+    line-height: @header-height;
+
+    background-color: @header-background;
+    color: white;
+
+    box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.5);
+
+    .title{
+        font-size: 1.25rem;
+        padding: 0 15px;
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        user-select: none;
+    }
+
+    nav{
+        display: flex;
+        flex-direction: row;
+        a{
+            color: white;
+            text-decoration: none;
+            padding: 0 15px;
+            font-size: 0.85rem;
+            text-align: center;
+            
+            background-color: @header-background;
+            border-bottom: solid 0px black;
+            transition: background-color ease-in-out 100ms, border-bottom ease-in-out 100ms;
+            user-select: none;
+
+            &:hover{
+                background-color: darken(@header-background, 5);
+                border-bottom-width: 3px;
+            }
+        }
+
+        &.right{
+            order: 2;
+            margin-left: auto;
+        }
+    }
+}
+
+.card{
+    margin: 10px;
+    box-shadow: 3px 3px 5px 2px rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    overflow: hidden;
+    .card-title{
+        background-color: @primary;
+        font-size: 1rem;
+        font-weight: bold;
+        padding: 10px;
+    }
+    .card-body, .card-body-skinny{
+        background-color: @card-background;
+        padding: 20px;
+        &.card-body-skinny{
+            padding: 0px;
+        }
+    }
+}
+
+.container{
+    width: 100%;
+}
+
+.row{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    @columns: 12;
+    .col-gen(@col-index) when (@col-index > 0){
+        .col-gen(@col-index - 1);
+        .col-@{col-index}{
+            width: calc((100% / @columns) * @col-index);
+        }
+    }
+    .col-gen(@columns);
+}
+
+.form-control{
+    label{
+        margin-top: 10px;
+        display: block;
+        user-select: none;
+    }
+
+    input[type=text], input[type=password], input[type=email], select{
+        display: block;
+        padding: 10px;
+        background-color: darken(@card-background, 5);
+        border: none;
+        color: white;
+        border-radius: 5px;
+        font-size: 1rem;
+        margin: 10px 0;
+        width: 100%;
+        outline: none;
+
+        &::placeholder{
+            color: #888;
+        }
+    }
+}
+
+@btn-vert-padding: 10px;
+@btn-horz-padding: 20px;
+@btn-background-color: @background-color;
+.btn, .btn-block, input[type=button], input[type=submit]{
+    display: inline-block;
+    position: relative;
+    
+    padding: @btn-vert-padding @btn-horz-padding;
+    
+    overflow: hidden;
+    background-color: darken(@card-background, 5);
+    
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    text-decoration: none;
+    
+    outline: none;
+    border: solid 2px transparent;
+    border-radius: 5px;
+    
+    cursor: pointer;
+
+    transition: background-color ease-in-out 200ms;
+
+    &.btn-block, &[type=button], &[type=submit]{
+        display: block;
+        width: 100%;
+    }
+    
+    &:hover{
+        background-color: darken(@btn-background-color, 3);
+    }
+
+    &.btn-danger{
+        color: @danger;
+        border-color: @danger;
+    }
+
+    &.btn-info{
+        color: @info;
+        border-color: @info;
+    }
+
+    &.btn-success{
+        color: @success;
+        border-color: @success;
+    }
+
+    &.btn-warning{
+        color: @warning;
+        border-color: @warning;
+    }
+
+    &.btn-white{
+        color: #FFFFFF;
+        border-color: #FFFFFF;
+    }
+
+    .fa{
+        margin-right: @btn-horz-padding;
+    }
+
+    &+.btn, &+.btn-block, &+input[type=button], &+input[type=submit]{
+        margin-left: 10px;
+    }
+}
+
+@hint-background: darken(@card-background, 5%);
+.hint{
+    width: 100%;
+    padding: 20px;
+    border: solid 1px black;
+    border-radius: 10px;
+    background-color: @hint-background;
+}
+
+#Notifications{
+    display: flex;
+    position: fixed;
+    flex-direction: column;
+
+    pointer-events: none;
+
+    min-width: 300px;
+    width: calc(~"100% / 4");
+    height: calc(~"100vh - "@header-height);
+    top: @header-height;
+    right: 0;
+    z-index: 100;
+
+    .alert{
+        position: relative;
+        background-color: darken(@background-color, 5);
+        border: solid 3px @info;
+        margin: 5px;
+        overflow: hidden;
+        color: lighten(@info, 100);
+
+        .alert-icon{
+            display: inline-block;
+            height: 50px;
+            line-height: 50px;
+            width: 50px;
+            text-align: center;
+            font-size: 1.2rem;
+            border-right: solid 3px @info;
+        }   
+
+        .alert-body{
+            display: inline-block;
+            padding: 0 15px;
+        }
+
+        &::before{
+            position: absolute;
+            cursor: pointer;
+            text-align: center;
+            margin: 5px;
+            color: @info;
+            top: 0;
+            right: 0;
+            content: "\58";
+            font-size: 1rem;
+            width: 25px;
+            height: 25px;
+            line-height: 25px;
+            font-family: var(--fa-style-family,"Font Awesome 6 Free");
+            font-weight: var(--fa-style,900);
+        }
+    }
+}
+
+*[data-tooltip]{
+    position: relative;
+    overflow: visible;
+    vertical-align: top;
+
+    
+    // Hide the tooltip if not hovered
+    &:not(:hover)::before{
+        filter:opacity(0);
+    }
+
+    // Tooltip
+    &::before{
+        position: absolute;
+        display: block;
+        white-space: nowrap;
+        transition: filter ease-in-out 100ms;
+        filter:opacity(1);
+
+        top: 0;
+        left: 50%;
+        transform:translateY(-120%) translateX(-50%);
+
+        padding: 5px;
+
+        content: attr(data-tooltip);
+
+        background-color: darken(@background-color, 5);
+        border-radius: 5px;
+        border: solid 1px black;        
+
+        font-size: 1rem;
+        font-weight: bold;
+        color: white;
+    }
+}
+
+
+
+@panel-border-color: #FFFFFF;
+.panel {
+    display: block;
+    position: relative;
+    margin: 10px;
+    margin-top: 35px;
+    
+    padding: 20px 15px;
+    border: solid 2px @panel-border-color;
+    border-radius: 10px;
+
+    &::before{
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        
+        transform: translateY(-50%) translateX(15%);
+        background-color: @card-background;
+        border: solid 2px @panel-border-color;
+        border-radius: 10px;
+        padding: 5px 10px;
+
+        font-weight: bold;
+        font-size: 1rem;
+
+        content: attr(name);
+
+        color: @panel-border-color;
+    }
+
+    &.panel-purple{
+            border-color: @purple;
+            &::before{
+            border-color: @purple;
+            color: @purple;
+        }
+    }
+}
+
+.bot-status{
+    visibility: hidden;
+    &::before{
+        visibility: visible;
+        display: inline-block;
+        vertical-align: top;
+        background-color: darken(@background-color, 5);
+        border: solid 2px white;
+        font-size: 0.7rem;
+        padding: 5px;
+        font-weight: bold;
+        border-radius: 5px;
+        vertical-align: top;
+        margin: 0 10px;
+        top: 0;
+        left: 0;
+        position: relative;
+    }
+
+    &[data-running="false"]::before{
+        border-color: @danger;
+        color: @danger;
+        content: "Not Running"
+    }
+    &[data-running="true"]::before{
+        border-color: @success;
+        color: @success;
+        content: "Running"
+    }
+}
+
+table.table-control{
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border-collapse: collapse;
+    tr{
+        th, td{
+            position: relative;
+            padding: 15px;
+            white-space: balance;
+        }
+        th{
+            text-align: left;
+            font-weight: bold;
+            font-size: 1;
+            background-color: lighten(@card-background, 10);
+        }
+        td{
+            font-size: 0.8rem;
+            padding-right: 30px;
+            a.edit-button:before{
+                position: absolute;
+                display: block;
+                top: 5px;
+                right: 0;
+                padding: 10px;
+                
+                font-family: "Font Awesome 6 Free";
+                content: "\f044";
+                font-weight: 400;
+                color: white;
+            }
+        }
+
+        &:nth-child(2n + 1){
+            background-color: darken(@card-background, 3);
+        }
+    }
+}

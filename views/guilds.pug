@@ -1,0 +1,15 @@
+extends _template
+
+block body
+    main
+        .container
+            .card
+                .card-body-skinny
+                    table.table-control
+                        tr
+                            th Name
+                            th ID
+                        each guild in guilds
+                            tr
+                                td #{guild.name}
+                                td #{guild.id}

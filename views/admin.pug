@@ -1,0 +1,64 @@
+extends _template
+
+block body
+    main
+        .row
+            .col-8
+                .card
+                    .card-title Users
+                    .card-body-skinny
+                        table.table-control
+                            tr
+                                th Username
+                                th Email Address
+                                th ID
+                                th Actions
+                            for user in users
+                                tr
+                                    td #{user.name}
+                                    td #{user.email}
+                                        a.edit-button(data-action="user-edit-email" data-id=user.id)
+                                    td #{user.id}
+                                    td.actions
+                                        a(data-action="user-change-password" data-user-id=user.id) Change Password
+                                        a(data-action="user-delete" data-user-id=user.id) Delete
+
+                .card
+                    .card-title Bots
+                    .card-body-skinny
+                        table.table-control
+                            tr
+                                th ID
+                                th Name
+                                th Owner
+                                th Actions
+                            if bots
+                                for bot in bots
+                                    tr
+                                        td #{bot.id}
+                                        td #{bot.name}
+                                        td #{bot.owner.name}
+                                        td.actions
+                                            a(data-action="bot-delete" data-id=bot.id) Delete
+            .col-4
+                .card
+                    .card-title Create New User
+                    .card-body
+                        form#formCreateUser.form-control(method="POST" action="/api/0/user/")
+                            label(for="username") Username
+                            input(type="text" name="username" placeholder="Username" required)
+                            
+                            label(for="email_address") Email Address
+                            input(type="email" name="email_address" placeholder="email@example.com")
+
+                            label(for="password") Password
+                            input(type="password" name="password" placeholder="Password")
+                            
+                            input(type="submit" value="Create New User")
+
+block css
+    link(rel="stylesheet" href="/public/css/admin.css")
+
+
+block js
+    script(src="/public/js/admin.js")

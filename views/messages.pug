@@ -1,0 +1,21 @@
+extends _template
+
+block css
+
+block body
+    main
+        .container
+            .card
+                .card-body-skinny
+                    table.table-control
+                        tr
+                            th Date / Time
+                            th Author
+                            th Content
+                        each message in messages
+                            tr
+                                td Jun 1st 2021 8:00AM
+                                td #{message.author}
+                                td #{message.content}
+
+block js

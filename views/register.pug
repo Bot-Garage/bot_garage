@@ -1,0 +1,26 @@
+extends _template
+
+block body
+    main
+        .row.justify-center
+            .col-4
+                .card
+                    .card-title Register
+                    .card-body
+                        form(name="register").form-control
+                            label(for="username") Username:
+                            input(type="text" name="username" placeholder="Username")
+
+                            label(for="email_address") Email Address:
+                            input(type="email" name="email_address" placeholder="email@example.com")
+
+                            label(for="password") Password:
+                            input(type="password" name="password" placeholder="Password")
+
+                            label(for="password_confirmation") Password Confirmation:
+                            input(type="password" name="password_confirmation" placeholder="Password Confirmation")
+
+                            input(type="submit" value="Register")
+
+block js
+    script(src="/public/js/register.js")
