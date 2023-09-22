@@ -160,6 +160,13 @@ header{
             color: #888;
         }
     }
+
+    input[type=checkbox]::after{
+        display: inline-block;
+        position: relative;
+        content: attr("label");
+        user-select: none;
+    }
 }
 
 @btn-vert-padding: 10px;

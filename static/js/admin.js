@@ -11,7 +11,8 @@ $("#formCreateUser").submit(function(e){
         data: JSON.stringify({
             username: $(this).children("input[name='username']").val(),
             email_address: $(this).children("input[name='email_address']").val(),
-            password: $(this).children("input[name='password']").val()
+            password: $(this).children("input[name='password']").val(),
+            admin: $(this).children("input[name='admin']").prop("checked")
         }),
         success: function(res){
             if(!res.success){

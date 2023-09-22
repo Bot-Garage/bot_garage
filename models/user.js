@@ -28,6 +28,12 @@ const userSchema = new mongoose.Schema({
         required: false,
         unique: true
     },
+    admin: {
+        type: Boolean,
+        required: true,
+        default: false,
+        unique: false
+    }
 });
 
 

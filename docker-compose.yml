@@ -16,6 +16,7 @@ services:
       DB_PORT: 27017
       ADMIN_USER_NAME: admin
       ADMIN_USER_PASSWORD: admin_example
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
     command: ["npm", "run", "app"]
     networks:
       - bot_garage_net

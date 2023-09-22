@@ -17,6 +17,25 @@ const jsonParser = bodyParser.json();
 const router = express.Router();
 
 
+
+
+
+// +-------------------+
+// |   Reply Factory   |
+// +-------------------+
+class C_Reply{
+    constructor(success = false, message = "No message supplied", options = { status_code: 200 }){
+        this.success = success;
+        this.message = message;
+        this.status_code = options.status_code;
+    }
+
+    get_reply(){
+        return { success: this.success, message: this.message }
+    }
+};
+
+
 // +------------------------+
 // |   POST: /api/0/user/   |
 // +------------------------+
@@ -24,30 +43,26 @@ router.post("/user/", routerUtils.api_auth_check(), jsonParser, async (req, res)
     // Invalid Username
     const username = req.body.username;
     if(!username || username == ""){
-        res.send({ success: false, message: "Parameter 'username' is non-existant." });
-        return;
+        return res.send({ success: false, message: "Parameter 'username' is non-existant." });
     }
 
     // Invalid Email Address
-    const email_address = req.body.email_address;
-    if(!email_address || email_address == ""){
-        res.send({ success: false, message: "Parameter 'email_address' is non-existant." });
-        return;
+    if(!req.body.email_address){
+        return res.send({ success: false, message: "Parameter 'email_address' is non-existant." });
     }
 
     // Invalid Password
-    const password = req.body.password;
-    if(!password || password == ""){
-        res.send({ success: false, message: "Parameter 'password' is non-existant." });
-        return;
+    if(!req.body.password){
+        return res.send({ success: false, message: "Parameter 'password' is non-existant." });
     }
 
-    var passwordHash = await bcrypt.hash(password, 10);
+    var passwordHash = await bcrypt.hash(req.body.password, 10);
 
     await mongoose.model("USER").create({
         name: username,
         password: passwordHash,
-        email: email_address
+        email: req.body.email_address,
+        admin: req.body.admin ? req.body.admin : false
     });
 
     res.send({ success: true, message: "User created successfully" });
@@ -104,7 +119,7 @@ router.patch("/user/", routerUtils.api_auth_check(), jsonParser, async (req, res
 // +--------------------------+
 // |   DELETE: /api/0/user/   |
 // +--------------------------+
-router.delete("/user/", routerUtils.api_auth_check(), jsonParser, async (req, res) => {
+router.delete("/user/", routerUtils.api_auth_check("admin"), jsonParser, async (req, res) => {
     // Invalid Parameter: id
     const user_id = req.body.id;
     if(!user_id || user_id == ""){

@@ -9,6 +9,7 @@ const morgan = require("morgan");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
+const sendgrid = require("@sendgrid/mail");
 
 
 
@@ -135,36 +136,46 @@ app.use("/api/0/", apiRouter);
     // +---------------------------+
     // |   Database - Admin User   |
     // +---------------------------+
-    var create_admin = false;
-    try{
-        const user_count = await User.countDocuments({}).exec();
-        if(user_count <= 0){
-            create_admin = true;
-        }
-    }
-    catch{
-        create_admin = true;
+
+    // Database - User - Get Count
+    var user_count;
+    try{ user_count = await User.countDocuments({}).exec() }
+    catch(err){
+        console.error("[Startup - Admin User] Failed to query user count. Error: ");
+        console.error(err);
+        process.exit();
     }
 
-    if(create_admin){
+    // Database - Admin User
+    if(user_count == 0){
         // Validate: process.env.ADMIN_USER_NAME
-        const new_admin_name = process.env.ADMIN_USER_NAME;
-        if(!new_admin_name) throw new Error("Enviroment Variable Missing: ADMIN_USER_NAME");
+        if(!process.env.ADMIN_USER_NAME) throw new Error("Enviroment Variable Missing: ADMIN_USER_NAME");
 
         // Validate: process.env.ADMIN_USER_PASSWORD
-        const new_admin_password = process.env.ADMIN_USER_PASSWORD;
-        const new_admin_password_hash = await bcrypt.hash(new_admin_password, 10);
-        if(!new_admin_password) throw new Error("Enviroment Variable Missing: ADMIN_USER_PASSWORD");
+        if(!process.env.ADMIN_USER_PASSWORD) throw new Error("Enviroment Variable Missing: ADMIN_USER_PASSWORD");
 
-        try{
-            await mongoose.model("USER").create({ name: new_admin_name, password: new_admin_password_hash });
-        }catch(err){
-            throw new Error("Failed to create admin user, Error: \n" + err);
+        // Create Admin User
+        try{ await mongoose.model("USER").create({ name: process.env.ADMIN_USER_NAME, password: await bcrypt.hash(process.env.ADMIN_USER_PASSWORD, 10), admin: true }) }
+        catch(err){
+            console.error("[Startup - Admin User] Failed to create admin user, Error: ");
+            console.error(err);
+            process.exit();
         }
         
-        // Verbose
-        console.log("[Startup] Admin user '" + new_admin_name + "' with the password '" + new_admin_password + "' has been created.")
+        console.log("[Startup] Admin user '" + process.env.ADMIN_USER_NAME + "' with the password '" + process.env.ADMIN_USER_PASSWORD + "' has been created.")
     }
+
+
+    // +------------------------+
+    // |   E-Mail Transporter   |
+    // +------------------------+
+    if(!process.env.SENDGRID_API_KEY) throw new Error("Enviroment Variable Missing: SENDGRID_API_KEY");
+
+    // Set API Key
+    sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
+
+    // Save mailgrid object
+    app.set("email", sendgrid);
 
 
     // +----------------------------------+
