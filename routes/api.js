@@ -144,24 +144,22 @@ router.delete("/user/", routerUtils.api_auth_check("admin"), jsonParser, async (
 // +-------------------------+
 router.post("/login/", jsonParser, async (req, res) => {
     // Invalid Parameter: Username
-    const username = req.body.username;
-    if(!username || username == ""){
-        res.send({ success: false, message: "Parameter 'username' is non-existant." });
-        return;
-    }
-
-    // Check if a user exists by that username
-    var db_user;
-    try {
-        db_user = await mongoose.model("USER").findOne({ name_lower: username.toLowerCase() }).exec();
-    } catch (error) {
-        return res.send({ success: false, message: "Failed to find user with that username" });
+    if(!req.body.username || req.body.username == ""){
+        return res.send({ success: false, message: "Parameter 'username' is non-existant." });
     }
 
     // Invalid Parameter: Password
-    const password = req.body.password;
+    if(!req.body.password || req.body.password == ""){
+        return res.send({ success: false, message: "Parameter 'username' is non-existant." });
+    }
 
-    const passwordMatch = await bcrypt.compare(password, db_user.password);
+    // Get user from database
+    var db_user;
+    try { db_user = await mongoose.model("USER").findOne({ name_lower: req.body.username.toLowerCase() }).exec(); }
+    catch (error) { return res.send({ success: false, message: "Failed to find user with that username" }); }
+
+    // Check the supplied password vs the password hash.
+    const passwordMatch = await bcrypt.compare(req.body.password, db_user.password);
     if(!passwordMatch){
         res.send({ success: false, message: "Incorrect password." });
         return;
