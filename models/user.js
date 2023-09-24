@@ -28,6 +28,15 @@ const userSchema = new mongoose.Schema({
         required: false,
         unique: true
     },
+    email_verified: {
+        type: Boolean,
+        default: false,
+        required: true
+    },
+    email_verify_code: {
+        type: String,
+        required: false
+    },
     admin: {
         type: Boolean,
         required: true,
@@ -38,10 +47,31 @@ const userSchema = new mongoose.Schema({
 
 
 
+// +---------------------------+
+// |   Method: GenVerifyCode   |
+// +---------------------------+
+userSchema.methods.GenVerifyCode = (cb) => {
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!! THIS:");
+    console.log(this);
+
+    // Generate Code
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-";
+    const length = 50;
+    var buffer = [];
+
+    for (var i = 0; i <= length; i++) {
+        buffer += characters[Math.floor(Math.random() * characters.length)];
+    }
+
+    // Return the code
+    return buffer;
+}
+
+
 // +---------------+
 // |   Save Hook   |
 // +---------------+
-userSchema.pre("save", function(next){
+userSchema.pre("save", function (next) {
     this.name_lower = this.name.toLowerCase();
     next();
 });

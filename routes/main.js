@@ -51,6 +51,29 @@ router.get("/profile/", routeUtils.auth_check(), async (req, res) => {
     res.render("profile");
 });
 
+// GET: Email Verification Page
+router.get("/verify/:userid/:email_verify_code", async (req, res) => {
+    if(!req.params.userid)
+        return res.render("error", { message: "Invalid email verification link." });
+
+    if(!req.params.email_verify_code)
+        return res.render("error", { message: "Invalid email verification link." });
+
+    // Fail - Invalid User ID
+    var db_user;
+    try{ db_user = await mongoose.model("USER").findById(req.params.userid).exec() }
+    catch(err){ return res.render("error", { message: "Invalid email verification link." }); }
+    
+    // Fail - Invalid Verify Code
+    if(req.params.email_verify_code != db_user.email_verify_code){
+        return res.render("error", { message: "Invalid email verification link." });
+    }
+
+    // Success
+    db_user.email_verified = true;
+    return res.redirect("/profile/")
+});
+
 
 // GET: Admin Dashboard
 router.get("/admin/", routeUtils.auth_check(), async (req, res) => {

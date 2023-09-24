@@ -80,17 +80,52 @@ $("a[data-action='user-delete']").click(function(event){
 });
 
 
+// +------------------------------------------------------+
+// |   User Email Verfication Code Regen Button - Click   |
+// +------------------------------------------------------+
+$("a[data-action='user-regen-email-verfify']").click(function(event){
+    event.preventDefault();
+
+    const user_id = $(event.target).attr("data-user-id");
+    Swal.fire({
+        title: "Generate a new verification ID?",
+        text: "User ID: '" + user_id + "'?",
+        icon: "warning",
+        showCancelButton: true,
+        cancelButtonText: "Cancel",
+        confirmButtonText: "Generate",
+        confirmButtonColor: "#ff3c1a"
+    }).then(function(res){
+        if(res.isConfirmed){
+            $.ajax({
+                url: "/api/0/user/regen_email_verification_code/",
+                type: "POST",
+                contentType: "application/JSON",
+                data: JSON.stringify({ id: user_id }),
+                success: function(res){
+                    Swal.fire({
+                        title: (res.success ? "Success!" : "Failure!"),
+                        text: res.message,
+                        icon: (res.success ? "success" : "error")
+                    });
+                }
+            });
+        }
+    });
+});
+
+
+
 // +-----------------------------------------+
 // |   User Change Password Button - Click   |
 // +-----------------------------------------+
 $("a[data-action='user-change-password']").click(function(event){
     event.preventDefault();
 
-    const user_id = $(this).attr("data-user-id");
     Swal.fire({
         title: "Change Password",
         input: "password",
-        text: "Enter the new password for: '" + user_id + "'.",
+        text: "Enter the new password for: '" + event.currentTarget.attr("data-user-id") + "'.",
         showCancelButton: true,
         cancelButtonText: "Cancel",
         confirmButtonText: "Change",
@@ -101,7 +136,7 @@ $("a[data-action='user-change-password']").click(function(event){
                 url: "/api/0/user/",
                 type: "PATCH",
                 contentType: "application/JSON",
-                data: JSON.stringify({ id: user_id, password: new_password }),
+                data: JSON.stringify({ id: event.currentTarget.attr("data-user-id") }),
                 success: function(res){
                     response = res;
                 }

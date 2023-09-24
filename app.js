@@ -9,7 +9,6 @@ const morgan = require("morgan");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
-const sendgrid = require("@sendgrid/mail");
 
 
 
@@ -164,18 +163,6 @@ app.use("/api/0/", apiRouter);
         
         console.log("[Startup] Admin user '" + process.env.ADMIN_USER_NAME + "' with the password '" + process.env.ADMIN_USER_PASSWORD + "' has been created.")
     }
-
-
-    // +------------------------+
-    // |   E-Mail Transporter   |
-    // +------------------------+
-    if(!process.env.SENDGRID_API_KEY) throw new Error("Enviroment Variable Missing: SENDGRID_API_KEY");
-
-    // Set API Key
-    sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
-
-    // Save mailgrid object
-    app.set("email", sendgrid);
 
 
     // +----------------------------------+

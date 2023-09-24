@@ -88,10 +88,10 @@ $("#bot-list .bot").click(function(event){
 // +----------------------------------+
 // |   Event: New Bot Form - Submit   |
 // +----------------------------------+
-$("form[name='BotCreate']").submit(function(e){
-    e.preventDefault();
+$("form[name='BotCreate']").submit(function(event){
+    event.preventDefault();
 
-    const bot_name = $(this).children("input[name='bot_name']").val();
+    const bot_name = $(event.currentTarget).children("input[name='name']").val();
 
     $.ajax({
         url: "/api/0/bot/",
@@ -101,20 +101,13 @@ $("form[name='BotCreate']").submit(function(e){
             name: bot_name
         }),
         success: function(res){
-            if(res.success){
-                Swal.fire({
-                    icon: "success",
-                    title: "Success!",
-                    text: res.message
-                  }).then(function(){
-                      location.reload();
-                  });
-            }else{
-                $("#BotSettingsHint").removeClass("hidden").html(res.message);
-            }
-        },
-        error: function(res){
-            console.log(res);
+            Swal.fire({
+                icon: (res.success ? "success" : "error"),
+                title: (res.success ? "Success!" : "error"),
+                text: res.message
+            }).then(() => {
+                if(res.success) location.reload();
+            });
         }
     });
 });
@@ -151,7 +144,7 @@ $("#BotActions a").click(function(e){
                     type: "DELETE",
                     contentType: "application/JSON",
                     data: JSON.stringify({
-                        bot_id: bot_id
+                        id: bot_id
                     }),
                     success: function(res){
                         if(!res.success){
@@ -181,7 +174,7 @@ $("#BotActions a").click(function(e){
             type: "POST",
             contentType: "application/JSON",
             data: JSON.stringify({
-                bot_id: bot_id,
+                id: bot_id,
                 action: requested_action
             }),
             success: function(res){
@@ -215,7 +208,7 @@ $("form[name='bot_general_settings']").submit((event) => {
         type: "PATCH",
         contentType: "application/JSON",
         data: JSON.stringify({
-            bot_id: $(event.currentTarget).attr("data-bot-id"),
+            id: $(event.currentTarget).attr("data-bot-id"),
             name: $(event.currentTarget).children("input[name='name']").val(),
             personality: $(event.currentTarget).children("form[name='bot_general_settings'] select[name='personality']").val(),
         }),
@@ -253,9 +246,9 @@ $("form[name='bot_discord_settings']").submit((event) => {
         type: "PATCH",
         contentType: "application/JSON",
         data: JSON.stringify({
-            bot_id: $(this).attr("data-bot-id"),
-            discord_client_token: $(this).children("input[name=discord_client_token]").val(),
-            discord_app_id: $(this).children("input[name=discord_app_id]").val()
+            id: $(event.currentTarget).attr("data-bot-id"),
+            discord_client_token: $(event.currentTarget).children("input[name=discord_client_token]").val(),
+            discord_app_id: $(event.currentTarget).children("input[name=discord_app_id]").val()
         }),
         success: function(res){
             if(res.success == true){
@@ -291,7 +284,7 @@ $("form[name='bot_openai_settings']").submit(function(event){
         type: "PATCH",
         contentType: "application/JSON",
         data: JSON.stringify({
-            bot_id: $(this).attr("data-bot-id"),
+            id: $(this).attr("data-bot-id"),
             openai_api_key: $(this).children("input[name=openai_api_key]").val(),
             openai_org_id: $(this).children("input[name=openai_org_id]").val(),
         }),
