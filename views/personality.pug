@@ -5,35 +5,33 @@ block css
 block body
     main
         .container
-            .row
-                .col-4
-                    .card
-                        .card-title Create New Personality
-                        .card-body
-                            form(name="create_personality").form-control
-                                label(for="personality_name") Personality Name:
-                                input(type="text" name="personality_name" placeholder="Personality Name")
-
-                                input(type="submit" value="Create")
-                .col-8
-                    .card
-                        .card-body-skinny
-                            table.table-control
-                                tr
-                                    th Name
-                                    th ID
-                                    th System
-                                    th Content
-                                    th Actions
-                                each personality in personalities
-                                    tr
-                                        td #{personality.name}
-                                            a.edit-button(data-action="personality-edit-name" data-id=personality.id)
-                                        td #{personality.id}
-                                        td #{personality.system}
-                                        td #{personality.content}
-                                            a.edit-button(data-action="personality-edit-content" data-id=personality.id)
-                                        td: a(data-action="personality-delete" data-id=personality.id) Delete
+            .card
+                .card-title Personality
+                .card-body
+                    .row
+                        .col-3
+                            form.form-control
+                                input(type="text" name="" placeholder="Personality Name")
+                        .col-2
+                            .btn-block.btn-info Create New Personality
+            .card
+                .card-body-skinny
+                    table.table-control
+                        tr
+                            th Name
+                            th ID
+                            th System
+                            th Content
+                            th Actions
+                        each personality in personalities
+                            tr
+                                td #{personality.name}
+                                    a.edit-button(data-action="personality-edit-name" data-id=personality.id)
+                                td #{personality.id}
+                                td #{personality.system}
+                                td #{personality.content}
+                                    a.edit-button(data-action="personality-edit-content" data-id=personality.id)
+                                td: a(data-action="personality-delete" data-id=personality.id) Delete
 
 block js
     script(src="/public/js/personality.js") 

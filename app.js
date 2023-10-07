@@ -106,8 +106,7 @@ app.use("/api/0/", apiRouter);
     // |   Database - Connection   |
     // +---------------------------+
 
-    console.log("[Startup - Database] Connecting with the following connection string:");
-    console.log("[Startup - Database] " + process.env.MONGO_DB_URL);
+    console.log("[Startup - Database] Connecting...");
 
     // Mongoose Event - On Connection Open
     mongoose.connection.on("open", function(err){

@@ -1,7 +1,7 @@
 @import "vars.less";
 
 body{
-    font-family: "Lato", sans-serif;
+    font-family: "Play", sans-serif;
     background-color: @background-color;
     color: white;
 
@@ -33,85 +33,125 @@ h1, h2, h3, h4, h5, h6{
 .flex{ display: flex }
 .inline-flex{ display: inline-flex }
 
-.top-pad-5 { margin-top: 5px };
-.top-pad-10 { margin-top: 10px };
-.top-pad-15 { margin-top: 15px };
-.top-pad-20 { margin-top: 20px };
-.top-pad-25 { margin-top: 25px };
+.top-pad-5 { margin-top: 5px }
+.top-pad-10 { margin-top: 10px }
+.top-pad-15 { margin-top: 15px }
+.top-pad-20 { margin-top: 20px }
+.top-pad-25 { margin-top: 25px }
 
 a{
     color: @info;
     cursor: pointer;
 }
 
-header{
-    display: flex;
-    flex-direction: row;
-
+#sidebar{
     position: fixed;
     top: 0;
     left: 0;
-    
-    width: 100%;
-    height: @header-height;
-    line-height: @header-height;
 
-    background-color: @header-background;
-    color: white;
+    width: @sidebar-width;
+    height: 100vh;
 
-    box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.5);
-
-    .title{
-        font-size: 1.25rem;
-        padding: 0 15px;
-        color: white;
-        text-decoration: none;
-        font-weight: bold;
-        user-select: none;
-    }
-
-    nav{
-        display: flex;
-        flex-direction: row;
+    background-color: @sidebar-background;
+    #sidebar_title{
+        background-color: darken(@sidebar-background, 5);
         a{
+            display: block;
+            font-weight: bolder;
+            text-align: center;
+            letter-spacing:2px;
+            padding: 15px;
             color: white;
             text-decoration: none;
-            padding: 0 15px;
-            font-size: 0.85rem;
-            text-align: center;
-            
-            background-color: @header-background;
-            border-bottom: solid 0px black;
-            transition: background-color ease-in-out 100ms, border-bottom ease-in-out 100ms;
-            user-select: none;
-
-            &:hover{
-                background-color: darken(@header-background, 5);
-                border-bottom-width: 3px;
-            }
-        }
-
-        &.right{
-            order: 2;
-            margin-left: auto;
+            font-size: 1.5rem;
         }
     }
+    #sidebar_user{
+        padding: 15px;
+        background-color: lighten(@sidebar-background, 5);
+        #sidebar_user_image{
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            background-color: black;
+            color: white;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+    
+        #sidebar_user_info{
+            display: inline-block;
+            vertical-align:sub;
+            padding-left: 5px;
+            #sidebar_user_name{
+                font-weight: bold;
+            }
+            #sidebar_user_role{
+                color: @text-muted;
+                font-size: 0.8rem;
+            }
+        }
+    }
+    #sidebar_nav{
+        .section{
+            font-size: 1.2rem;
+            font-weight: bold;
+            width: 100%;
+            padding: 5px;
+            background-color: darken(@sidebar-background, 3);
+        }
+        a{
+            display: block;
+            padding: 15px;
+            color: white;
+            font-size: 1.2rem;
+            text-decoration: none;
+            &:hover{
+                background-color: lighten(@sidebar-background, 5);
+            }
+            &.tabbed{
+                text-indent: 10px;
+            }
+        }
+        .header{
+            padding: 0 15px;
+            width: 100%;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: @text-muted;
+        }
+    }
+}
+
+main{
+    width: calc(~"100% - "@sidebar-width);
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    left: @sidebar-width;
+    padding: 15px;
 }
 
 .card{
     margin: 10px;
     box-shadow: 3px 3px 5px 2px rgba(0, 0, 0, 0.8);
-    border-radius: 10px;
+    border-radius: 5px;
     overflow: hidden;
-    .card-title{
+    .card-title, .card-title-dark{
         background-color: @primary;
-        font-size: 1rem;
+        font-size: 1.2rem;
         font-weight: bold;
-        padding: 10px;
+        padding: 10px 15px;
+        &.card-title-dark{
+            background-color: darken(@card-background, 5);
+        }
     }
     .card-body, .card-body-skinny{
         background-color: @card-background;
-        padding: 20px;
+        padding: 10px;
         &.card-body-skinny{
             padding: 0px;
         }
@@ -132,6 +172,7 @@ header{
         .col-gen(@col-index - 1);
         .col-@{col-index}{
             width: calc((100% / @columns) * @col-index);
+            padding: 0 10px;
         }
     }
     .col-gen(@columns);
@@ -139,26 +180,45 @@ header{
 
 .form-control{
     label{
-        margin-top: 10px;
         display: block;
         user-select: none;
+        font-size: 1rem;
+        font-weight: bold;
     }
 
     input[type=text], input[type=password], input[type=email], select{
         display: block;
         padding: 10px;
-        background-color: darken(@card-background, 5);
+        background-color: darken(@card-background, 7);
         border: none;
         color: white;
         border-radius: 5px;
         font-size: 1rem;
-        margin: 10px 0;
         width: 100%;
+        font-weight: bold;
         outline: none;
+
+        border: solid 2px #050505;
 
         &::placeholder{
             color: #888;
         }
+
+        &.input-info{
+            &::placeholder{
+                color: #CCC;
+                font-weight: bold;
+            }
+            border-color: @info;
+        }
+    }
+
+    label + input{
+        margin-top: 10px;
+    }
+
+    input + input {
+        margin-top: 10px;
     }
 
     input[type=checkbox]::after{
@@ -189,7 +249,6 @@ header{
     outline: none;
     border: solid 2px transparent;
     border-radius: 5px;
-    
     cursor: pointer;
 
     transition: background-color ease-in-out 200ms;
@@ -226,6 +285,11 @@ header{
     &.btn-white{
         color: #FFFFFF;
         border-color: #FFFFFF;
+    }
+
+    &.btn-sm{
+        padding: 5px 10px;
+        font-size: 0.8rem;
     }
 
     .fa{
@@ -306,7 +370,6 @@ header{
     position: relative;
     overflow: visible;
     vertical-align: top;
-
     
     // Hide the tooltip if not hovered
     &:not(:hover)::before{
@@ -315,6 +378,7 @@ header{
 
     // Tooltip
     &::before{
+        pointer-events: none;
         position: absolute;
         display: block;
         white-space: nowrap;
@@ -420,8 +484,9 @@ table.table-control{
     tr{
         th, td{
             position: relative;
-            padding: 15px;
             white-space: balance;
+            padding: 10px 15px;
+            font-size: 1.2rem;
         }
         th{
             text-align: left;
@@ -431,14 +496,11 @@ table.table-control{
         }
         td{
             font-size: 0.8rem;
-            padding-right: 30px;
             a.edit-button:before{
                 position: absolute;
                 display: block;
                 top: 5px;
                 right: 0;
-                padding: 10px;
-                
                 font-family: "Font Awesome 6 Free";
                 content: "\f044";
                 font-weight: 400;

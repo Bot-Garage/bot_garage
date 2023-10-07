@@ -93,56 +93,64 @@ router.get("/bots/", routeUtils.auth_check(), async (req, res) => {
 
 // GET: Personality
 router.get("/personality/", routeUtils.auth_check(), async (req, res) => {
-    let db_personalities;
     try{
-        db_personalities = await mongoose.model("PERSONALITY").find({ owner: req.session.user }).exec();
+        var db_personalities = await mongoose.model("PERSONALITY").find({ owner: req.session.user }).exec();
+        return res.render("personality", { personalities: db_personalities });
     }catch(err){
-        res.statusCode = 500;
         return res.render("error", { message: err });
     }
-
-    return res.render("personality", { personalities: db_personalities });
 });
 
-// GET: Channels
-router.get("/channels/", routeUtils.auth_check(), async (req, res) => {
-    // Get channels from database
-    var db_channels;
+// GET: Admin / Users
+router.get("/admin/users", routeUtils.auth_check(), async (req, res) => {
     try{
-        db_channels = await mongoose.model("CHANNEL").find({}).exec();
-    }catch(err){
-        res.render("error", { message: "Router: /get/channels/ - Failed to query channels. Error: " + err });
+        var db_users = await mongoose.model("USER").find({}).exec();
+        return res.render("admin/users", { users: db_users });
+    }catch(error){
+        return res.render("error", { message: "Internal Server Error. ", error});
     }
-
-    return res.render("channels", { channels: db_channels });
 });
 
-// GET: Guilds
-router.get("/guilds/", routeUtils.auth_check(), async (req, res) => {
-    // Get guilds from database
-    var db_guilds;
+// GET: Admin / Channels
+router.get("/admin/channels/", routeUtils.auth_check(), async (req, res) => {
     try{
-        db_guilds = await mongoose.model("GUILD").find({}).exec();
+        var db_channels = await mongoose.model("CHANNEL").find({}).exec();
+        return res.render("admin/channels", { channels: db_channels });
+    }catch(err){
+        return res.render("error", { message: "Router: /get/channels/ - Failed to query channels. Error: " + err });
+    }
+});
+
+// GET: Admin / Bots
+router.get("/admin/bots/", routeUtils.auth_check(), async (req, res) => {
+    try{
+        var db_channels = await mongoose.model("CHANNEL").find({}).exec();
+        return res.render("admin/bots", { channels: db_channels });
+    }catch(err){
+        return res.render("error", { message: "Router: /get/channels/ - Failed to query channels. Error: " + err });
+    }
+});
+
+
+// GET: Admin / Guilds
+router.get("/admin/guilds/", routeUtils.auth_check(), async (req, res) => {
+    try{
+        var db_guilds = await mongoose.model("GUILD").find({}).exec();
+        return res.render("admin/guilds", { guilds: db_guilds });
     }catch(err){
         res.render("error", { message: "Router: /get/guilds/ - Failed to query guilds. Error: " + err });
     }
 
-    return res.render("guilds", { guilds: db_guilds });
 });
 
-// GET: Messages
-router.get("/messages/", routeUtils.auth_check(), async (req, res) => {
-    // Get messages from database
-    var db_messages;
+// GET: Admin / Messages
+router.get("/admin/messages/", routeUtils.auth_check(), async (req, res) => {
     try{
-        db_messages = await mongoose.model("MESSAGE").find().exec();
+        var db_messages = await mongoose.model("MESSAGE").find().exec();
+        res.render("admin/messages", { messages: db_messages });
     }catch(err){
         return res.render("error", { message: "Failed to load messages. Error: " + err });
     }
-
-    // Render page
-    res.render("messages", { messages: db_messages });
-
 });
 
 

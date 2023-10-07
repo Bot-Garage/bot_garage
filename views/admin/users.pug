@@ -1,0 +1,47 @@
+extends ../_template
+
+block body
+    main
+        .container
+            .card 
+                .card-title Admin - Users
+                .card-body-skinny
+                    .row
+                        .col-4
+                            .panel(name="Create New User")
+                                form.form-control(name="admin_user_create")
+                                    label(for="name") Name:
+                                    input(type="text" name="name" placeholder="User Name")
+
+                                    label(for="email") Email Address:
+                                    input(type="email" name="email" placeholder="user@example.com")
+
+                                    label(for="password") Password:
+                                    input(type="password" name="password" placeholder="Password")
+
+                                    label(for="admin") Administator?
+                                    input(type="checkbox" name="admin")
+
+                                    input(type="submit" value="Create New User")
+            .card
+                .card-body-skinny
+                    table.table-control
+                        tr
+                            th Name
+                            th Email Address
+                            th Role
+                            th Email Verification Status
+                            th Actions
+                        each user in users
+                            tr
+                                td #{user.name}
+                                td #{user.email}
+                                td #{user.admin ? "Administrator" : "Member"}
+                                td #{user.email_verified ? "Verfied" : "Not Verified"}
+                                    a(href="#") Resend
+                                td
+                                    .split(style="display: flex; flex-direction: row")
+                                        a.btn-block.btn-danger(user-id=user.id action="delete" data-tooltip="WARNING This is Permanent!") Delete
+
+block js
+    script(src="/public/js/admin/users.js") 

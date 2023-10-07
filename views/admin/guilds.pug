@@ -1,6 +1,4 @@
-extends _template
-
-block css
+extends ../_template
 
 block body
     main
@@ -11,10 +9,7 @@ block body
                         tr
                             th Name
                             th ID
-                        each channel in channels
+                        each guild in guilds
                             tr
-                                td #{channel.name}
-                                td #{channel.id}
-
-
-block js
+                                td #{guild.name}
+                                td #{guild.id}
