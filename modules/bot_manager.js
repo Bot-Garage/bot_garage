@@ -74,10 +74,9 @@ class C_Bot{
     // +-------------------------------------+
     async create_client(){
         const pBot = this;
-
+        
         if(pBot.discord_client)
             this.stop();
-
 
         // Create Discord Client
         pBot.discord_client = new discordjs.Client({
@@ -93,47 +92,130 @@ class C_Bot{
             ]
         });
 
+
+
         pBot.discord_client.on("messageCreate", async function(message){
-            // Save to database
+            // +--------------------+
+            // |   Message Memory   |
+            // +--------------------+
             try{
                 await mongoose.model("MESSAGE").createFromDiscord(message);
             }catch(err){
                 console.error("C_Bot:create_client() Failed to save message, error: " + err);
             }
 
-            // Skip bot messages
+            // +--------------------+
+            // |   Prerequisites    |
+            // +--------------------+
             if(message.author.bot) return;
 
-            // Skip messages that don't include atting the bot
             if(!message.mentions.users.get(pBot.discord_client.user.id)) return;
 
-            console.log(util.inspect(message, false, null, true));
 
-            // Create OpenAI Client
+
+            // +-----------------+
+            // |   Personality   |
+            // +-----------------+
+            var personality = "";
+            try{
+                const this_bot = await mongoose.model("BOT").findById(pBot.bot_id).populate("personality").exec();
+                
+                if(this_bot && this_bot.personality && this_bot.personality.content){
+                    personality = this_bot.personality.content;
+                }else{
+                    return;
+                }
+            }catch(err){
+                return;
+            }
+
+
+
+            // +---------------------------+
+            // |   Personality Variables   |
+            // +---------------------------+
+            personality = personality.replace("{{guild_name}}", message.guild.name);
+            personality = personality.replace("{{channel_name}}", message.channel.name);
+
+
+
+            // +--------------------+
+            // |   Generate Reply   |
+            // +--------------------+
+
+            // Prerequisites 
             await pBot.update_openai();
             if(!pBot.openai || !pBot.openai.ChatCompletion){
                 console.log("C_Bot:create_client() Failed to create OpenAI Client.");
                 return;
             }
 
-            // Generate a reply from OpenAI
-            const reply = await pBot.openai.ChatCompletion({
-                messages: [
-                    {
-                        role: "system",
-                        content: "You are playing make pretend as Alfred, a helpful assistant with a crude attitude from Australia."
-                    },{
-                        role: "user",
-                        content: message.content
-                    }
-                ]
-            });
+            // Have the bot start "typing" in the channel while the message is generated
+            message.channel.sendTyping();
 
-            if(reply){
-                const content = reply.choices[0].message.content;
-                message.reply(content)
+            // Generate a reply from OpenAI
+            var messages = [{
+                role: "system",
+                content: [{
+                    type: "text",
+                    text: personality
+                }]
+            }];
+
+            // Create User Message Contents
+            var user_message = {
+                role: "user",
+                content: [{
+                    type: "text",
+                    text: message.content
+                }]
             }
+            
+            // Deal with attachments
+            if(message.attachments){
+                message.attachments.forEach((attachment) => {
+                    if(attachment.url){
+                        user_message.content.push({
+                            type: "image_url",
+                            image_url: {
+                                url: attachment.url
+                            }
+                        }
+                    )}
+                });
+            }
+
+            // User Message
+            messages.push(user_message);
+
+            console.log("SEND MESSAGE: ");
+            console.log(util.inspect(messages, false, null, true));
+
+
+
+            // API Request
+            var openai_reply;
+            try{
+                openai_reply = await pBot.openai.ChatCompletion({ messages });
+            }catch(err){
+                console.error("Failed to get OpenAI Reply, Error:");
+                console.error(err);
+                return;
+            }
+            
+            
+            // +-----------+
+            // |   Reply   |
+            // +-----------+
+            const reply_msg = openai_reply.choices[0].message.content;
+            console.log("RAW REPLY:")
+            console.log(util.inspect(openai_reply, false, null, true));
+            
+            if(!reply_msg) return message.reply("I have a headache.");
+            message.reply(reply_msg);
         });
+
+
 
         pBot.discord_client.on("ready", async function(client){
             // Fatch the guilds the bot is in
@@ -238,12 +320,11 @@ class C_Bot{
 
         // Update database
         try{
-            console.log("STOP: " + this.bot_id);
-            const bot_db_info = await Bot.findById(this.bot_id).exec()
+            const bot_db_info = await Bot.findById(this.bot_id).exec();
             bot_db_info.started = false;
             await bot_db_info.save();
         }catch{ 
-            return false
+            return false;
         }
 
         return true;

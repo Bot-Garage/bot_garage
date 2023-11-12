@@ -25,10 +25,11 @@ class OpenAI{
                 "OpenAI-Organization": this.ORG_ID
             },
             body: JSON.stringify({
-                model: (options.model || "gpt-4"),
+                model: (options.model || "gpt-4-vision-preview"),
                 temperature: (options.temperature || 1.2),
                 top_p: (options.top_p || 1),
                 n: (options.n || 1),
+                max_tokens: (options.max_tokens || 500),
                 messages: options.messages
             })
         });

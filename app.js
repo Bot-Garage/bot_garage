@@ -108,6 +108,11 @@ app.use("/api/0/", apiRouter);
 
     console.log("[Startup - Database] Connecting...");
 
+    if(!process.env.DB_SECRET){
+        console.error("Missing environmental variable: 'DB_SECRET'")
+        process.exit();
+    }
+
     // Mongoose Event - On Connection Open
     mongoose.connection.on("open", function(err){
         console.log("[Startup] Connected to MongoDB Database Successfully.");

@@ -261,12 +261,12 @@ router.all(["/bot/", "/bot/:id/"], routerUtils.api_auth_check(), jsonParser, asy
 
 router.all("/personality/", routerUtils.auth_check(), jsonParser, async (req, res) => {
     const method = req.method;
-    const { id , name, content } = req.body;
+    const { id , name, content } = (req.method == "GET" ? req.params : req.body);
 
     if(method == "GET"){
 
     }else if(method == "POST"){
-        if(!name) return res.status(400).send({ success: false, message: "Parameter 'name' is non-existant." });
+        if(!name) return res.send({ success: false, message: "Parameter 'name' is non-existant." });
 
         try{
             const new_personality = await mongoose.model("PERSONALITY").create({ name: name, owner: req.session.user });

@@ -8,12 +8,12 @@ block body
             .card
                 .card-title Personality
                 .card-body
-                    .row
-                        .col-3
-                            form.form-control
-                                input(type="text" name="" placeholder="Personality Name")
-                        .col-2
-                            .btn-block.btn-info Create New Personality
+                    form.form-control(name="create_personality")
+                        .row
+                            .col-3
+                                    input(type="text" name="name" placeholder="Personality Name")
+                            .col-2
+                                button(type="submit").btn-block.btn-info Create New Personality
             .card
                 .card-body-skinny
                     table.table-control
