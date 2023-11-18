@@ -21,13 +21,8 @@ class C_Bot {
         async () => {
             if (!pbot.bot_id) throw new Error("C_Bot:constructor(bot_id) Missing parameter 'bot_id'.");
 
-            // Create Client
             await pbot.create_client();
-
-            // Update OpenAI
             await pbot.update_openai();
-
-            // Start
             await pbot.start();
         }
     }
@@ -40,32 +35,31 @@ class C_Bot {
     async update_openai() {
         const pBot = this;
 
-        if (this.openai) {
-            delete this.openai;
-            this.openai = null;
+        if (pBot.openai) {
+            delete pBot.openai;
+            pBot.openai = null;
         }
 
         var openai_api_key = "", openai_org_id = "";
-
         try {
-            const db_bot = await mongoose.model("BOT").findById(this.bot_id).exec();
+            const db_bot = await mongoose.model("BOT").findById(pBot.bot_id).exec();
 
             openai_api_key = db_bot.openai_api_key;
             openai_org_id = db_bot.openai_org_id;
 
         } catch (err) {
-            Log.LogBotError("[" + pBot.bot_id + "] Update OpenAI failed due to database error.");
+            Log.LogBotError("[" + pBot.bot_id + "] Update OpenAI failed due to database error.", pBot.bot_id);
             console.error(err);
             return false;
         }
 
         if (!openai_api_key) {
-            Log.LogBotError("[" + pBot.bot_id + "] Can't update OpenAI due to API Key missing.");
+            Log.LogBotError("[" + pBot.bot_id + "] Can't update OpenAI due to API Key missing.", pBot.bot_id);
             return false;
         }
 
         if (!openai_org_id) {
-            Log.LogBotError("[" + pBot.bot_id + "] Can't update OpenAI due to Organization ID missing.");
+            Log.LogBotError("[" + pBot.bot_id + "] Can't update OpenAI due to Organization ID missing.", pBot.bot_id);
             return false;
         }
 
@@ -105,7 +99,7 @@ class C_Bot {
             try {
                 await mongoose.model("MESSAGE").createFromDiscord(message);
             } catch (err) {
-                Log.LogBotError("[" + pBot.bot_id + "] Failed to save message.")
+                Log.LogBotError("[" + pBot.bot_id + "] Failed to save message.", pBot.bot_id);
                 console.error(err);
             }
 
@@ -153,7 +147,7 @@ class C_Bot {
             // Prerequisites 
             await pBot.update_openai();
             if (!pBot.openai || !pBot.openai.ChatCompletion) {
-                Log.LogBotError("[" + pBot.bot_id + "] Failed to create OpenAI Client.")
+                Log.LogBotError("[" + pBot.bot_id + "] Failed to create OpenAI Client.", pBot.bot_id);
                 return;
             }
 
@@ -201,7 +195,7 @@ class C_Bot {
             try {
                 openai_reply = await pBot.openai.ChatCompletion({ messages });
             } catch (err) {
-                Log.LogBotError("[" + pBot.bot_id + "] Failed to get OpenAI Reply.")
+                Log.LogBotError("[" + pBot.bot_id + "] Failed to get OpenAI Reply.", pBot.bot_id);
                 console.error(err);
                 return;
             }
@@ -218,20 +212,16 @@ class C_Bot {
 
 
         pBot.discord_client.on("ready", async function (client) {
-            // Fatch the guilds the bot is in
             const guilds = client.guilds.cache;
-
-            // Update database guilds from database
             var bot_guilds = [];
 
-            // Get guild objects from database
             try {
                 guilds.forEach(async function (guild) {
                     const db_guild = await mongoose.model("GUILD").findFromDiscord(guild);
                     if (db_guild) bot_guilds.push(db_guild);
                 });
             } catch (err) {
-                Log.LogBotError("[" + pBot.bot_id + "] Failed to query database.")
+                Log.LogBotError("[" + pBot.bot_id + "] Failed to query database.", pBot.bot_id);
                 console.error(err);
                 return;
             }
@@ -246,11 +236,11 @@ class C_Bot {
                 db_bot.guilds = bot_guilds;
                 db_bot.save();
             } catch (err) {
-                Log.LogBotError("[" + pBot.bot_id + "] Failed to update bots guilds.")
+                Log.LogBotError("[" + pBot.bot_id + "] Failed to update bots guilds.", pBot.bot_id);
                 console.error(err);
             }
 
-            Log.LogBot("[" + pBot.bot_id + "] '" + client.user.username + "' started.");
+            Log.LogBot("[" + pBot.bot_id + "] '" + client.user.username + "' started.", pBot.bot_id);
         });
     }
 
@@ -267,7 +257,7 @@ class C_Bot {
             bot_db = await mongoose.model("BOT").findById(pBot.bot_id).exec()
         }
         catch (err) {
-            Log.LogBotError("[" + pBot.bot_id + "] Failed to update bots guilds.")
+            Log.LogBotError("[" + pBot.bot_id + "] Failed to update bots guilds.", pBot.bot_id);
             console.error(err);
             return false;
         }
@@ -361,7 +351,6 @@ class C_BotManager {
             }
         }
 
-        // Bot doesn't exist - create;
         if (ret == null) {
             ret = new C_Bot(bot_id)
             this.bots.push(ret);
@@ -384,30 +373,24 @@ class C_BotManager {
     // |   Function - C_BotManager:UpdateBots()   |
     // +------------------------------------------+
     async UpdateBots() {
-        // Check that there is a valid database connection
         if (!mongoose.connection.readyState == 1) {
             console.error("C_BotManager:UpdateBots() - Mongoose not started, exiting...");
             return false;
         }
 
         try {
-            // Gets bots from database
             const db_bots = await mongoose.model("BOT").find({}).exec();
             if (!db_bots) return false;
 
-            // Update each bot
             this.DeleteBots();
 
-            // Attempt to start each bot
             for (const bot of db_bots) {
-                // Don't start bots that have been stopped
                 if (bot.stopped) {
                     bot.started = false;
                     bot.save();
                     return console.log("C_BotManager:UpdateBots() - Skipping stopped bot " + bot.name + " - " + bot.id);
                 }
 
-                // Start the bot
                 console.log("C_BotManager:UpdateBots() - Starting " + bot.name + " - " + bot.id);
                 this.StartBot(bot._id);
             }
@@ -423,14 +406,9 @@ class C_BotManager {
     // |   Function - C_BotManager:StartBot()   |
     // +----------------------------------------+
     async StartBot(bot_id) {
-        // Attempt to find the bot
         const thisbot = await this.GetBot(bot_id);
+        if (thisbot == null) return false;
 
-        // Exit Failure - Invalid Bot
-        if (thisbot == null)
-            return false;
-
-        // Exit - Start the bot - Return results
         return thisbot.start();
     }
 
@@ -439,14 +417,9 @@ class C_BotManager {
     // |   Function - C_BotManager:StopBot()   |
     // +---------------------------------------+
     async StopBot(bot_id) {
-        // Attempt to find the bot
         const thisbot = await this.GetBot(bot_id);
+        if (thisbot == null) return false;
 
-        // Exit Failure - Invalid Bot
-        if (thisbot == null)
-            return false;
-
-        // Exit - Stop the bot - Return results
         return thisbot.stop();
     }
 }

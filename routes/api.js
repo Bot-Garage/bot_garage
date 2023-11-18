@@ -111,7 +111,6 @@ router.post("/login/", jsonParser, async (req, res) => {
     const { username, password } = req.body;
     if (!username) return res.status(400).send({ success: false, message: "Parameter 'username' is non-existant." });
     if (!password) return res.status(400).send({ success: false, message: "Parameter 'password' is non-existant." });
-    username("")
 
     try {
         const db_user = await mongoose.model("USER").findOne({ name_lower: req.body.username.toLowerCase() }).exec();
