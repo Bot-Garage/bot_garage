@@ -24,12 +24,12 @@ const GuildSchema = new mongoose.Schema({
 // +---------------------------------------------+
 // |   Schema Static Function - findFromDiscord   |
 // +---------------------------------------------+
-GuildSchema.statics.findFromDiscord = async function(discordObj){
+GuildSchema.statics.findFromDiscord = async function (discordObj) {
     const guild_obj = await mongoose.model("GUILD").findOne({ id: discordObj.id });
 
-    if(!guild_obj)
+    if (!guild_obj)
         return await mongoose.model("GUILD").create({ id: discordObj.id, name: discordObj.name });
-    
+
     return guild_obj;
 }
 

@@ -50,16 +50,16 @@ block body
                         form#formCreateUser.form-control(method="POST" action="/api/0/user/")
                             label(for="username") Username
                             input(type="text" name="username" placeholder="Username" required)
-                            
+
                             label(for="email_address") Email Address
                             input(type="email" name="email_address" placeholder="email@example.com")
 
                             label(for="password") Password
                             input(type="password" name="password" placeholder="Password")
- 
+
                             input(style="display: inline-block" type="checkbox" name="admin")
                             label(style="display: inline-block" for="admin") Administrator?
-                            
+
                             input(type="submit" value="Create New User")
 
 block css

@@ -40,7 +40,7 @@ const MessageSchema = new mongoose.Schema({
 // +---------------------------------------------+
 // |   Schema Static Function - findFromDiscord   |
 // +---------------------------------------------+
-MessageSchema.statics.createFromDiscord = async function(discordObj){
+MessageSchema.statics.createFromDiscord = async function (discordObj) {
     const message_author = await mongoose.model("AUTHOR").findFromDiscord(discordObj.author);
     const message_guild = await mongoose.model("GUILD").findFromDiscord(discordObj.guild);
     const message_channel = await mongoose.model("CHANNEL").findFromDiscord(discordObj.channel);

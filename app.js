@@ -22,6 +22,7 @@ const Message = require("./models/message.js");
 const Channel = require("./models/channel.js");
 const Guild = require("./models/guild.js");
 const Author = require("./models/author.js");
+const Log = require("./models/log.js");
 
 
 
@@ -100,29 +101,25 @@ app.use("/api/0/", apiRouter);
 // |   Function - Startup   |
 // +------------------------+
 (async () => {
-    console.log("[Startup] Starting...");
-
     // +---------------------------+
     // |   Database - Connection   |
     // +---------------------------+
-
-    console.log("[Startup - Database] Connecting...");
-
     if(!process.env.DB_SECRET){
-        console.error("Missing environmental variable: 'DB_SECRET'")
+        Log.LogError("[Startup - Database] Missing environmental variable: 'DB_SECRET'.")
+        
         process.exit();
     }
 
     // Mongoose Event - On Connection Open
-    mongoose.connection.on("open", function(err){
-        console.log("[Startup] Connected to MongoDB Database Successfully.");
-
+    mongoose.connection.on("open", function(){
+        Log.LogSystem("[Startup - Database] Connected Successfully.");
+        
         BotManager.UpdateBots();
     });
 
     // Mongoose Event - On Connection Error
     mongoose.connection.on("error", function(err){
-        console.error("[Startup - Database] Failed! Error:");
+        Log.LogError("[Startup - Database] Connection failed!");
         console.error(err);
     });
 
@@ -130,8 +127,9 @@ app.use("/api/0/", apiRouter);
     try{
         await mongoose.connect(process.env.MONGO_DB_URL);
     }catch(err){
-        console.error("[Startup - Database] Failed to connect to MongoDB Database, error: ");
+        Log.LogError("[Startup - Database] Connection failed!");
         console.error(err);
+        
         process.exit()
     }
 
@@ -144,7 +142,7 @@ app.use("/api/0/", apiRouter);
     var user_count;
     try{ user_count = await User.countDocuments({}).exec() }
     catch(err){
-        console.error("[Startup - Admin User] Failed to query user count. Error: ");
+        Log.LogError("[Startup - Admin User] Failed to due to database error.");
         console.error(err);
         process.exit();
     }
@@ -152,20 +150,27 @@ app.use("/api/0/", apiRouter);
     // Database - Admin User
     if(user_count == 0){
         // Validate: process.env.ADMIN_USER_NAME
-        if(!process.env.ADMIN_USER_NAME) throw new Error("Enviroment Variable Missing: ADMIN_USER_NAME");
+        if(!process.env.ADMIN_USER_NAME){
+            Log.LogError("[Startup - Admin User] Enviroment Variable Missing: 'ADMIN_USER_NAME'.");
+            throw new Error("[Startup - Admin User] Enviroment Variable Missing: 'ADMIN_USER_NAME'.");
+        }
 
         // Validate: process.env.ADMIN_USER_PASSWORD
-        if(!process.env.ADMIN_USER_PASSWORD) throw new Error("Enviroment Variable Missing: ADMIN_USER_PASSWORD");
+        if(!process.env.ADMIN_USER_PASSWORD){
+            Log.LogError("[Startup - Admin User] Enviroment Variable Missing: 'ADMIN_USER_PASSWORD'.");
+            throw new Error("[Startup - Admin User] Enviroment Variable Missing: 'ADMIN_USER_PASSWORD'.");
+        }
 
         // Create Admin User
         try{ await mongoose.model("USER").create({ name: process.env.ADMIN_USER_NAME, password: await bcrypt.hash(process.env.ADMIN_USER_PASSWORD, 10), admin: true }) }
         catch(err){
-            console.error("[Startup - Admin User] Failed to create admin user, Error: ");
+            Log.LogError("[Startup - Admin User] Failed to create admin user!");
+            
             console.error(err);
             process.exit();
         }
         
-        console.log("[Startup] Admin user '" + process.env.ADMIN_USER_NAME + "' with the password '" + process.env.ADMIN_USER_PASSWORD + "' has been created.")
+        Log.LogSystem("[Startup - Admin User] User '" + process.env.ADMIN_USER_NAME + "' with the password '" + process.env.ADMIN_USER_PASSWORD + "' has been created.");
     }
 
 
@@ -174,6 +179,7 @@ app.use("/api/0/", apiRouter);
     // +----------------------------------+
     app.listen(8080, function(err){
         if(err) throw err;
-        console.log("Started listening at http://0.0.0.0:8080/");
+        Log.LogSystem("[Startup - Web Server] Started listening on port 8080.");
+        console.log("");
     });
 })()

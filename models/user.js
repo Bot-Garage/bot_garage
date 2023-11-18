@@ -51,9 +51,6 @@ const userSchema = new mongoose.Schema({
 // |   Method: GenVerifyCode   |
 // +---------------------------+
 userSchema.methods.GenVerifyCode = (cb) => {
-    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!! THIS:");
-    console.log(this);
-
     // Generate Code
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-";
     const length = 50;

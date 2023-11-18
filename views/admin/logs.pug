@@ -1,0 +1,24 @@
+extends ../_template
+
+block css
+block js
+    script(src="/public/js/admin/logs.js")
+
+block body
+    main
+        .card
+            .card-title Logs
+            .card-body
+                a#DeleteAllBtn.btn Clear Logs
+        .card
+            .card-body-skinny
+                table.table-control
+                    tr
+                        th Date / Time
+                        th Type
+                        th Message
+                    each log in logs
+                        tr
+                            td #{log.date.toString()}
+                            td #{log.type}
+                            td #{log.message}

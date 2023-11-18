@@ -10,6 +10,7 @@ services:
     depends_on:
       - bot_garage_mongo_db
     environment:
+      TZ: America/Detroit
       DB_USER: admin
       DB_PASSWORD: ${DB_SECRET}
       DB_HOST: bot_garage_mongo_db
@@ -26,6 +27,7 @@ services:
     image: mongo:4.4.18
     restart: unless-stopped
     environment:
+      TZ: America/Detroit
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: ${DB_SECRET}
     ports:

@@ -28,10 +28,12 @@ router.get("/login/", async (req, res) => {
 });
 
 
+
 // GET: Register
 router.get("/register/", async (req, res) => {
     res.render("register");
 });
+
 
 
 // GET: Logout Page
@@ -46,10 +48,14 @@ router.get(["/", "/home/"], routeUtils.auth_check(), async (req, res) => {
     res.render("home");
 });
 
+
+
 // GET: Profile Page
 router.get("/profile/", routeUtils.auth_check(), async (req, res) => {
     res.render("profile");
 });
+
+
 
 // GET: Email Verification Page
 router.get("/verify/:userid/:email_verify_code", async (req, res) => {
@@ -75,12 +81,14 @@ router.get("/verify/:userid/:email_verify_code", async (req, res) => {
 });
 
 
+
 // GET: Admin Dashboard
 router.get("/admin/", routeUtils.auth_check(), async (req, res) => {
     var users = await mongoose.model("USER").find().sort("name").limit(15).exec();
 
     res.render("admin", { users: users });
 });
+
 
 
 // GET: Bots Dashboard
@@ -90,6 +98,8 @@ router.get("/bots/", routeUtils.auth_check(), async (req, res) => {
 
     res.render("bots", { bots: db_bots, personalities: db_personalities });
 });
+
+
 
 // GET: Personality
 router.get("/personality/", routeUtils.auth_check(), async (req, res) => {
@@ -101,6 +111,8 @@ router.get("/personality/", routeUtils.auth_check(), async (req, res) => {
     }
 });
 
+
+
 // GET: Admin / Users
 router.get("/admin/users", routeUtils.auth_check(), async (req, res) => {
     try{
@@ -110,6 +122,8 @@ router.get("/admin/users", routeUtils.auth_check(), async (req, res) => {
         return res.render("error", { message: "Internal Server Error. ", error});
     }
 });
+
+
 
 // GET: Admin / Channels
 router.get("/admin/channels/", routeUtils.auth_check(), async (req, res) => {
@@ -121,6 +135,8 @@ router.get("/admin/channels/", routeUtils.auth_check(), async (req, res) => {
     }
 });
 
+
+
 // GET: Admin / Bots
 router.get("/admin/bots/", routeUtils.auth_check(), async (req, res) => {
     try{
@@ -130,6 +146,7 @@ router.get("/admin/bots/", routeUtils.auth_check(), async (req, res) => {
         return res.render("error", { message: "Router: /get/channels/ - Failed to query channels. Error: " + err });
     }
 });
+
 
 
 // GET: Admin / Guilds
@@ -143,6 +160,8 @@ router.get("/admin/guilds/", routeUtils.auth_check(), async (req, res) => {
 
 });
 
+
+
 // GET: Admin / Messages
 router.get("/admin/messages/", routeUtils.auth_check(), async (req, res) => {
     try{
@@ -150,6 +169,18 @@ router.get("/admin/messages/", routeUtils.auth_check(), async (req, res) => {
         res.render("admin/messages", { messages: db_messages });
     }catch(err){
         return res.render("error", { message: "Failed to load messages. Error: " + err });
+    }
+});
+
+
+
+// GET: Admin / Logs
+router.get("/admin/logs/", routeUtils.auth_check(), async (req, res) => {
+    try{
+        const db_logs = await mongoose.model("LOG").find().limit(100).sort({"date": -1}).exec();
+        res.render("admin/logs", { logs: db_logs });
+    }catch(err){
+        return res.render("error", { message: "Failed to logs. Error: " + err });
     }
 });
 

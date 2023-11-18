@@ -1,8 +1,6 @@
 $("form[name='create_personality']").submit((event) => {
     event.preventDefault();
 
-    alert($(event.currentTarget).find("input[name='name']").val())
-
     $.ajax({
         url: "/api/0/personality/",
         type: "POST",

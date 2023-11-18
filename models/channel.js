@@ -24,10 +24,10 @@ const ChannelSchema = new mongoose.Schema({
 // +---------------------------------------------+
 // |   Schema Static Function - findFromDiscord   |
 // +---------------------------------------------+
-ChannelSchema.statics.findFromDiscord = async function(discordObj){
+ChannelSchema.statics.findFromDiscord = async function (discordObj) {
     const channel_obj = await mongoose.model("CHANNEL").findOne({ id: discordObj.id });
 
-    if(channel_obj && channel_obj != null)
+    if (channel_obj && channel_obj != null)
         return channel_obj
 
     return await mongoose.model("CHANNEL").create({ id: discordObj.id, name: discordObj.name });
