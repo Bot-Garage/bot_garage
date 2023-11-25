@@ -1,84 +1,116 @@
 // +------------------------------------------+
 // |   Function - UpdateBotDataById(bot_id)   |
 // +------------------------------------------+
-function UpdateBotDataById(bot_id){
+function UpdateBotDataById(bot_id) {
     $.ajax({
         url: "/api/0/bot/" + bot_id + "/",
         method: "GET",
         success: res => {
-            if(res.success) UpdateBotData(res.bot)
+            if (res.success) UpdateBotData(res.bot)
         }
     })
 }
 
 
 // +-----------------------------------+
-// |   Function - UpdateBotData(bot)   |
-// +-----------------------------------+
-function UpdateBotData(bot){
-    // Update Bot Information - Unhide Window
-    $("#BotInfo").removeClass("hidden");
-
-    // Update Bot Information - Bot Name
-    $("#BotName").html(bot.name);
-
-    // Bot Information - Bot Status ID
-    $("#BotStatus").attr("data-bot-id", bot._id);
-
-    // Bot Status - Update Data
-    $(`.bot-status[data-bot-id='${bot._id}']`).attr("data-running", bot.started);
-    
-    // Update Bot Actions - Bot ID
-    $("#BotActions a").attr("data-bot-id", bot._id);
-
-    
-    // General Settings - Form Bot ID
-    $("form[name='bot_general_settings']").attr("data-bot-id", bot._id);
-
-    // General Settings - Name
-    $("form[name='bot_general_settings'] input[name='name']").val(bot.name);
-    
-    // General Settings - Personality
-    $("form[name='bot_general_settings'] select[name='personality']").val(bot.personality);
-    
-    
-    // Discord Settings - Form Bot ID
-    $("form[name='bot_discord_settings']").attr("data-bot-id", bot._id);
-    
-    // Discord Settings - Discord Client Token
-    $("form[name='bot_discord_settings'] input[name='discord_client_token']").val(bot.discord_client_token);
-    
-    // Discord Settings - Discord App ID
-    $("form[name='bot_discord_settings'] input[name='discord_app_id']").val(bot.discord_app_id);
-
-    
-    // OpenAI Settings - Form Bot ID
-    $("form[name='bot_openai_settings']").attr("data-bot-id", bot._id);
-
-    // OpenAI Settings - API Key
-    $("form[name='bot_openai_settings'] input[name='openai_api_key']").val(bot.openai_api_key);
-    
-    // OpenAI Settings - Org ID
-    $("form[name='bot_openai_settings'] input[name='openai_org_id']").val(bot.openai_org_id);
-}
-
-
-// +-----------------------------------+
 // |   Event: Bot List - Bot - Click   |
 // +-----------------------------------+
-$("#bot-list .bot").click(function(event){
+$("#bot-list .bot").click(function (event) {
     event.preventDefault();
 
+    const bot_id = $(event.currentTarget).attr("data-bot-id");
+
+    // +-------------------------+
+    // |   Update Bot Settings   |
+    // +-------------------------+
     $.ajax({
-        url: "/api/0/bot/" + $(event.currentTarget).attr("data-bot-id"),
+        url: "/api/0/bot/" + bot_id,
         type: "GET",
-        success: function(res){
-            if(res.success) UpdateBotData(res.bot);
-            else Swal.fire({
-                title: "Error!",
-                text: "Failed to get bot information. Please try again later.",
-                icon: "error"
-            });
+        success: function (res) {
+            if (res.success) {
+                // Update Bot Information - Unhide Window
+                $("#BotInfo").removeClass("hidden");
+
+                // Update Bot Information - Bot Name
+                $("#BotName").html(res.bot.name);
+
+                // Bot Information - Bot Status ID
+                $("#BotStatus").attr("data-bot-id", res.bot._id);
+
+                // Bot Status - Update Data
+                $(`.bot-status[data-bot-id='${res.bot._id}']`).attr("data-running", res.bot.started);
+
+                // Update Bot Actions - Bot ID
+                $("#BotActions a").attr("data-bot-id", res.bot._id);
+
+
+                // General Settings - Form Bot ID
+                $("form[name='bot_general_settings']").attr("data-bot-id", res.bot._id);
+
+                // General Settings - Name
+                $("form[name='bot_general_settings'] input[name='name']").val(res.bot.name);
+
+                // General Settings - Personality
+                $("form[name='bot_general_settings'] select[name='personality']").val(res.bot.personality);
+
+
+                // Discord Settings - Form Bot ID
+                $("form[name='bot_discord_settings']").attr("data-bot-id", res.bot._id);
+
+                // Discord Settings - Discord Client Token
+                $("form[name='bot_discord_settings'] input[name='discord_client_token']").val(res.bot.discord_client_token);
+
+                // Discord Settings - Discord App ID
+                $("form[name='bot_discord_settings'] input[name='discord_app_id']").val(res.bot.discord_app_id);
+
+
+                // OpenAI Settings - Form Bot ID
+                $("form[name='bot_openai_settings']").attr("data-bot-id", res.bot._id);
+
+                // OpenAI Settings - API Key
+                $("form[name='bot_openai_settings'] input[name='openai_api_key']").val(res.bot.openai_api_key);
+
+                // OpenAI Settings - Org ID
+                $("form[name='bot_openai_settings'] input[name='openai_org_id']").val(res.bot.openai_org_id);
+            } else {
+                Swal.fire({
+                    title: "Error!",
+                    text: "Failed to get bot information. Please try again later.",
+                    icon: "error"
+                });
+            }
+        }
+    });
+
+
+
+    // +---------------------+
+    // |   Update Bot Logs   |
+    // +---------------------+
+    $.ajax({
+        url: "/api/0/logs/",
+        type: "GET",
+        formatData: false,
+        data: { id: bot_id },
+        success: function (res) {
+            if (res.success) {
+                console.log(res);
+                $("table[name='bot_logs']").find("tr").not("tr:first").remove();
+
+                res.logs.forEach((log) => {
+                    $("table[name='bot_logs']").append(`<tr>
+                                                            <td>${log.date.toString()}</td>
+                                                            <td>${log.type}</td>
+                                                            <td>${log.message}</td>
+                                                        </tr>`);
+                })
+            } else {
+                Swal.fire({
+                    title: "Error!",
+                    text: "Failed to get bot logs. Please try again later.",
+                    icon: "error"
+                });
+            }
         }
     });
 });
@@ -88,7 +120,7 @@ $("#bot-list .bot").click(function(event){
 // +----------------------------------+
 // |   Event: New Bot Form - Submit   |
 // +----------------------------------+
-$("form[name='BotCreate']").submit(function(event){
+$("form[name='BotCreate']").submit(function (event) {
     event.preventDefault();
 
     const bot_name = $(event.currentTarget).children("input[name='name']").val();
@@ -100,13 +132,13 @@ $("form[name='BotCreate']").submit(function(event){
         data: JSON.stringify({
             name: bot_name
         }),
-        success: function(res){
+        success: function (res) {
             Swal.fire({
                 icon: (res.success ? "success" : "error"),
                 title: (res.success ? "Success!" : "error"),
                 text: res.message
             }).then(() => {
-                if(res.success) location.reload();
+                if (res.success) location.reload();
             });
         }
     });
@@ -116,19 +148,19 @@ $("form[name='BotCreate']").submit(function(event){
 // +------------------------------------+
 // |   Event - Action Buttons - Click   |
 // +------------------------------------+
-$("#BotActions a").click(function(e){
+$("#BotActions a").click(function (e) {
     e.preventDefault();
 
     // Validation: Action attribute
     const bot_id = $(this).attr("data-bot-id");
-    if(!bot_id) return;
+    if (!bot_id) return;
 
     // Validation: Action attribute
     const requested_action = $(this).attr("data-action");
-    if(!requested_action) return;
+    if (!requested_action) return;
 
     // Action - Delete - Delete the bot
-    if(requested_action == "delete"){
+    if (requested_action == "delete") {
         Swal.fire({
             icon: "warning",
             title: "Warning!",
@@ -137,8 +169,8 @@ $("#BotActions a").click(function(e){
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#dd3333",
             confirmButtonText: "Delete it!"
-        }).then(function(res){
-            if(res.isConfirmed){
+        }).then(function (res) {
+            if (res.isConfirmed) {
                 $.ajax({
                     url: "/api/0/bot/",
                     type: "DELETE",
@@ -146,21 +178,21 @@ $("#BotActions a").click(function(e){
                     data: JSON.stringify({
                         id: bot_id
                     }),
-                    success: function(res){
-                        if(!res.success){
+                    success: function (res) {
+                        if (!res.success) {
                             Swal.fire({
                                 title: "Failed!",
                                 text: res.message,
                                 icon: "error"
-                            }).then(function(res){
+                            }).then(function (res) {
                                 location.reload();
                             });
-                        }else{
+                        } else {
                             Swal.fire({
                                 title: "Success!",
                                 text: res.message,
                                 icon: "success"
-                            }).then(function(res){
+                            }).then(function (res) {
                                 location.reload();
                             });
                         }
@@ -168,7 +200,7 @@ $("#BotActions a").click(function(e){
                 });
             }
         })
-    }else if(requested_action == "start" || requested_action == "stop"){
+    } else if (requested_action == "start" || requested_action == "stop") {
         $.ajax({
             url: "/api/0/bot/actions/",
             type: "POST",
@@ -177,9 +209,9 @@ $("#BotActions a").click(function(e){
                 id: bot_id,
                 action: requested_action
             }),
-            success: function(res){
+            success: function (res) {
                 // Failed to start / stop bot
-                if(!res.success){
+                if (!res.success) {
                     Swal.fire({
                         title: "Failed!",
                         text: res.message,
@@ -213,7 +245,7 @@ $("form[name='bot_general_settings']").submit((event) => {
             personality: $(event.currentTarget).children("form[name='bot_general_settings'] select[name='personality']").val(),
         }),
         success: (res) => {
-            if(res.success == true){
+            if (res.success == true) {
                 Swal.fire({
                     title: "Success",
                     text: "Bot General Settings have been saved.",
@@ -221,7 +253,7 @@ $("form[name='bot_general_settings']").submit((event) => {
                 }).then((swal_res) => {
                     UpdateBotDataById(res.bot._id);
                 });
-            }else{
+            } else {
                 Swal.fire({
                     title: "Failed!",
                     text: res.message,
@@ -250,16 +282,16 @@ $("form[name='bot_discord_settings']").submit((event) => {
             discord_client_token: $(event.currentTarget).children("input[name=discord_client_token]").val(),
             discord_app_id: $(event.currentTarget).children("input[name=discord_app_id]").val()
         }),
-        success: function(res){
-            if(res.success == true){
+        success: function (res) {
+            if (res.success == true) {
                 Swal.fire({
                     title: "Success",
                     text: "Bot Discord Settings have been saved.",
                     icon: "success"
-                }).then(function(res){
+                }).then(function (res) {
                     UpdateBotData(res.bot._id);
                 });
-            }else{
+            } else {
                 Swal.fire({
                     title: "Failed!",
                     text: res.message,
@@ -276,7 +308,7 @@ $("form[name='bot_discord_settings']").submit((event) => {
 // |                               |
 // |   Form: bot_openai_settings   |
 // +-------------------------------+
-$("form[name='bot_openai_settings']").submit(function(event){
+$("form[name='bot_openai_settings']").submit(function (event) {
     event.preventDefault();
 
     $.ajax({
@@ -288,16 +320,16 @@ $("form[name='bot_openai_settings']").submit(function(event){
             openai_api_key: $(this).children("input[name=openai_api_key]").val(),
             openai_org_id: $(this).children("input[name=openai_org_id]").val(),
         }),
-        success: function(res){
-            if(res.success == true){
+        success: function (res) {
+            if (res.success == true) {
                 Swal.fire({
                     title: "Success",
                     text: "Bot OpenAI Settings have been saved.",
                     icon: "success"
-                }).then(function(res){
+                }).then(function (res) {
                     UpdateBotData(res.bot._id);
                 });
-            }else{
+            } else {
                 Swal.fire({
                     title: "Failed!",
                     text: res.message,

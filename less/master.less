@@ -1,6 +1,6 @@
 @import "vars.less";
 
-body{
+body {
     font-family: "Play", sans-serif;
     background-color: @background-color;
     color: white;
@@ -9,42 +9,92 @@ body{
     top: @header-height;
 }
 
-*, *::before, *::after{
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
-h1, h2, h3, h4, h5, h6{
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     margin: 0;
     padding: 0;
 }
 
-.justify-center{ justify-content: center }
+.justify-center {
+    justify-content: center
+}
 
-.float-left{ float: left }
-.float-right{ float: right }
+.float-left {
+    float: left
+}
 
-.clear-left{ clear: left }
-.clear-right{ clear: right }
-.clear-both{ clear: both }
+.float-right {
+    float: right
+}
 
-.hidden{ display: none }
-.block{ display: block }
-.inline-block{ display: inline-block }
-.flex{ display: flex }
-.inline-flex{ display: inline-flex }
+.clear-left {
+    clear: left
+}
 
-.top-pad-5 { margin-top: 5px }
-.top-pad-10 { margin-top: 10px }
-.top-pad-15 { margin-top: 15px }
-.top-pad-20 { margin-top: 20px }
-.top-pad-25 { margin-top: 25px }
+.clear-right {
+    clear: right
+}
 
-a{
+.clear-both {
+    clear: both
+}
+
+.hidden {
+    display: none
+}
+
+.block {
+    display: block
+}
+
+.inline-block {
+    display: inline-block
+}
+
+.flex {
+    display: flex
+}
+
+.inline-flex {
+    display: inline-flex
+}
+
+.top-pad-5 {
+    margin-top: 5px
+}
+
+.top-pad-10 {
+    margin-top: 10px
+}
+
+.top-pad-15 {
+    margin-top: 15px
+}
+
+.top-pad-20 {
+    margin-top: 20px
+}
+
+.top-pad-25 {
+    margin-top: 25px
+}
+
+a {
     color: @info;
     cursor: pointer;
 }
 
-#sidebar{
+#sidebar {
     position: fixed;
     top: 0;
     left: 0;
@@ -53,23 +103,27 @@ a{
     height: 100vh;
 
     background-color: @sidebar-background;
-    #sidebar_title{
+
+    #sidebar_title {
         background-color: darken(@sidebar-background, 5);
-        a{
+
+        a {
             display: block;
             font-weight: bolder;
             text-align: center;
-            letter-spacing:2px;
+            letter-spacing: 2px;
             padding: 15px;
             color: white;
             text-decoration: none;
             font-size: 1.5rem;
         }
     }
-    #sidebar_user{
+
+    #sidebar_user {
         padding: 15px;
         background-color: lighten(@sidebar-background, 5);
-        #sidebar_user_image{
+
+        #sidebar_user_image {
             display: inline-block;
             width: 50px;
             height: 50px;
@@ -81,42 +135,49 @@ a{
             font-size: 1.5rem;
             font-weight: bold;
         }
-    
-        #sidebar_user_info{
+
+        #sidebar_user_info {
             display: inline-block;
-            vertical-align:sub;
+            vertical-align: sub;
             padding-left: 5px;
-            #sidebar_user_name{
+
+            #sidebar_user_name {
                 font-weight: bold;
             }
-            #sidebar_user_role{
+
+            #sidebar_user_role {
                 color: @text-muted;
                 font-size: 0.8rem;
             }
         }
     }
-    #sidebar_nav{
-        .section{
+
+    #sidebar_nav {
+        .section {
             font-size: 1.2rem;
             font-weight: bold;
             width: 100%;
             padding: 5px;
             background-color: darken(@sidebar-background, 3);
         }
-        a{
+
+        a {
             display: block;
             padding: 15px;
             color: white;
             font-size: 1.2rem;
             text-decoration: none;
-            &:hover{
+
+            &:hover {
                 background-color: lighten(@sidebar-background, 5);
             }
-            &.tabbed{
+
+            &.tabbed {
                 text-indent: 10px;
             }
         }
-        .header{
+
+        .header {
             padding: 0 15px;
             width: 100%;
             font-weight: bold;
@@ -126,67 +187,80 @@ a{
     }
 }
 
-main{
+main {
     width: calc(~"100% - "@sidebar-width);
     position: fixed;
     top: 0;
     height: 100vh;
     left: @sidebar-width;
     padding: 15px;
+    overflow-y: auto;
 }
 
-.card{
+.card {
     margin: 10px;
     box-shadow: 3px 3px 5px 2px rgba(0, 0, 0, 0.8);
     border-radius: 5px;
     overflow: hidden;
-    .card-title, .card-title-dark{
+
+    .card-title,
+    .card-title-dark {
         background-color: @primary;
         font-size: 1.2rem;
         font-weight: bold;
         padding: 10px 15px;
-        &.card-title-dark{
+
+        &.card-title-dark {
             background-color: darken(@card-background, 5);
         }
     }
-    .card-body, .card-body-skinny{
+
+    .card-body,
+    .card-body-skinny {
         background-color: @card-background;
         padding: 10px;
-        &.card-body-skinny{
+
+        &.card-body-skinny {
             padding: 0px;
         }
     }
 }
 
-.container{
+.container {
     width: 100%;
 }
 
-.row{
+.row {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
 
     @columns: 12;
-    .col-gen(@col-index) when (@col-index > 0){
+
+    .col-gen(@col-index) when (@col-index > 0) {
         .col-gen(@col-index - 1);
-        .col-@{col-index}{
+
+        .col-@{col-index} {
             width: calc((100% / @columns) * @col-index);
             padding: 0 10px;
         }
     }
+
     .col-gen(@columns);
 }
 
-.form-control{
-    label{
+.form-control {
+    label {
         display: block;
         user-select: none;
         font-size: 1rem;
         font-weight: bold;
     }
 
-    input[type=text], input[type=password], input[type=email], select{
+    input[type=text],
+    input[type=password],
+    input[type=email],
+    select {
         display: block;
         padding: 10px;
         background-color: darken(@card-background, 7);
@@ -200,24 +274,30 @@ main{
 
         border: solid 2px #050505;
 
-        &::placeholder{
+        &::placeholder {
             color: #888;
         }
 
-        &.input-info{
-            &::placeholder{
+        &.input-info {
+            &::placeholder {
                 color: #CCC;
                 font-weight: bold;
             }
+
             border-color: @info;
         }
     }
 
-    label + input, input + input, select + input, input + select, label + select, input + label{
+    label+input,
+    input+input,
+    select+input,
+    input+select,
+    label+select,
+    input+label {
         margin-top: 10px;
     }
 
-    input[type=checkbox]::after{
+    input[type=checkbox]::after {
         display: inline-block;
         position: relative;
         content: attr("label");
@@ -228,20 +308,24 @@ main{
 @btn-vert-padding: 10px;
 @btn-horz-padding: 20px;
 @btn-background-color: @background-color;
-.btn, .btn-block, input[type=button], input[type=submit]{
+
+.btn,
+.btn-block,
+input[type=button],
+input[type=submit] {
     display: inline-block;
     position: relative;
-    
+
     padding: @btn-vert-padding @btn-horz-padding;
-    
+
     overflow: hidden;
     background-color: darken(@card-background, 5);
-    
+
     color: white;
     text-align: center;
     font-weight: bold;
     text-decoration: none;
-    
+
     outline: none;
     border: solid 2px transparent;
     border-radius: 5px;
@@ -249,56 +333,62 @@ main{
 
     transition: background-color ease-in-out 200ms;
 
-    &.btn-block, &[type=button], &[type=submit]{
+    &.btn-block,
+    &[type=button],
+    &[type=submit] {
         display: block;
         width: 100%;
     }
-    
-    &:hover{
+
+    &:hover {
         background-color: darken(@btn-background-color, 3);
     }
 
-    &.btn-danger{
+    &.btn-danger {
         color: @danger;
         border-color: @danger;
     }
 
-    &.btn-info{
+    &.btn-info {
         color: @info;
         border-color: @info;
     }
 
-    &.btn-success{
+    &.btn-success {
         color: @success;
         border-color: @success;
     }
 
-    &.btn-warning{
+    &.btn-warning {
         color: @warning;
         border-color: @warning;
     }
 
-    &.btn-white{
+    &.btn-white {
         color: #FFFFFF;
         border-color: #FFFFFF;
     }
 
-    &.btn-sm{
+    &.btn-sm {
         padding: 5px 10px;
         font-size: 0.8rem;
     }
 
-    .fa{
+    .fa {
         margin-right: @btn-horz-padding;
     }
 
-    &+.btn, &+.btn-block, &+input[type=button], &+input[type=submit]{
+    &+.btn,
+    &+.btn-block,
+    &+input[type=button],
+    &+input[type=submit] {
         margin-left: 10px;
     }
 }
 
 @hint-background: darken(@card-background, 5%);
-.hint{
+
+.hint {
     width: 100%;
     padding: 20px;
     border: solid 1px black;
@@ -306,7 +396,7 @@ main{
     background-color: @hint-background;
 }
 
-#Notifications{
+#Notifications {
     display: flex;
     position: fixed;
     flex-direction: column;
@@ -320,7 +410,7 @@ main{
     right: 0;
     z-index: 100;
 
-    .alert{
+    .alert {
         position: relative;
         background-color: darken(@background-color, 5);
         border: solid 3px @info;
@@ -328,7 +418,7 @@ main{
         overflow: hidden;
         color: lighten(@info, 100);
 
-        .alert-icon{
+        .alert-icon {
             display: inline-block;
             height: 50px;
             line-height: 50px;
@@ -336,14 +426,14 @@ main{
             text-align: center;
             font-size: 1.2rem;
             border-right: solid 3px @info;
-        }   
+        }
 
-        .alert-body{
+        .alert-body {
             display: inline-block;
             padding: 0 15px;
         }
 
-        &::before{
+        &::before {
             position: absolute;
             cursor: pointer;
             text-align: center;
@@ -356,34 +446,34 @@ main{
             width: 25px;
             height: 25px;
             line-height: 25px;
-            font-family: var(--fa-style-family,"Font Awesome 6 Free");
-            font-weight: var(--fa-style,900);
+            font-family: var(--fa-style-family, "Font Awesome 6 Free");
+            font-weight: var(--fa-style, 900);
         }
     }
 }
 
-*[data-tooltip]{
+*[data-tooltip] {
     position: relative;
     overflow: visible;
     vertical-align: top;
-    
+
     // Hide the tooltip if not hovered
-    &:not(:hover)::before{
-        filter:opacity(0);
+    &:not(:hover)::before {
+        filter: opacity(0);
     }
 
     // Tooltip
-    &::before{
+    &::before {
         pointer-events: none;
         position: absolute;
         display: block;
         white-space: nowrap;
         transition: filter ease-in-out 100ms;
-        filter:opacity(1);
+        filter: opacity(1);
 
         top: 0;
         left: 50%;
-        transform:translateY(-120%) translateX(-50%);
+        transform: translateY(-120%) translateX(-50%);
 
         padding: 5px;
 
@@ -391,7 +481,7 @@ main{
 
         background-color: darken(@background-color, 5);
         border-radius: 5px;
-        border: solid 1px black;        
+        border: solid 1px black;
 
         font-size: 1rem;
         font-weight: bold;
@@ -402,22 +492,23 @@ main{
 
 
 @panel-border-color: #FFFFFF;
+
 .panel {
     display: block;
     position: relative;
     margin: 10px;
     margin-top: 35px;
-    
+
     padding: 20px 15px;
     border: solid 2px @panel-border-color;
     border-radius: 10px;
 
-    &::before{
+    &::before {
         display: block;
         position: absolute;
         top: 0;
         left: 0;
-        
+
         transform: translateY(-50%) translateX(15%);
         background-color: @card-background;
         border: solid 2px @panel-border-color;
@@ -432,18 +523,20 @@ main{
         color: @panel-border-color;
     }
 
-    &.panel-purple{
-            border-color: @purple;
-            &::before{
+    &.panel-purple {
+        border-color: @purple;
+
+        &::before {
             border-color: @purple;
             color: @purple;
         }
     }
 }
 
-.bot-status{
+.bot-status {
     visibility: hidden;
-    &::before{
+
+    &::before {
         visibility: visible;
         display: inline-block;
         vertical-align: top;
@@ -460,39 +553,46 @@ main{
         position: relative;
     }
 
-    &[data-running="false"]::before{
+    &[data-running="false"]::before {
         border-color: @danger;
         color: @danger;
         content: "Not Running"
     }
-    &[data-running="true"]::before{
+
+    &[data-running="true"]::before {
         border-color: @success;
         color: @success;
         content: "Running"
     }
 }
 
-table.table-control{
+table.table-control {
     width: 100%;
     margin: 0;
     padding: 0;
     border-collapse: collapse;
-    tr{
-        th, td{
+
+    tr {
+
+        th,
+        td {
             position: relative;
             white-space: balance;
             padding: 10px 15px;
             font-size: 1.2rem;
         }
-        th{
+
+        th {
             text-align: left;
             font-weight: bold;
             font-size: 1;
             background-color: lighten(@card-background, 10);
         }
-        td{
+
+        td {
             font-size: 0.8rem;
-            a.edit-button:before{
+
+            a.edit-button:before {
                 position: absolute;
                 display: block;
                 top: 5px;
@@ -504,7 +604,7 @@ table.table-control{
             }
         }
 
-        &:nth-child(2n + 1){
+        &:nth-child(2n + 1) {
             background-color: darken(@card-background, 3);
         }
     }

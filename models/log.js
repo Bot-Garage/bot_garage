@@ -42,12 +42,12 @@ LogSchema.statics.LogSystemError = async function (message) {
 
 LogSchema.statics.LogBot = async function (message, bot_id = null) {
     console.log(message);
-    return await mongoose.model("LOG").create({ type: "Bot", message: message, bot_id: bot_id });
+    return await mongoose.model("LOG").create({ type: "Bot", message: message, bot: bot_id });
 }
 
 LogSchema.statics.LogBotError = async function (message, bot_id = null) {
     console.error(message);
-    return await mongoose.model("LOG").create({ type: "Bot", message: message, bot_id: bot_id });
+    return await mongoose.model("LOG").create({ type: "Bot", message: message, bot: bot_id });
 }
 
 

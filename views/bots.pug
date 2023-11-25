@@ -28,14 +28,10 @@ block body
                                             .right
                                                 span.name #{bot.name}
                                                     span.bot-status(data-running=`${bot.started}` data-bot-id=`${bot._id}`)
-                .col-9 <!-- Content  -->
-                    #BotInfo.card.hidden <!-- Bot Information / Status  -->
+                #BotInfo.hidden.col-9 <!-- Content  -->
+                    .card <!-- Bot Information / Status  -->
                         .card-title Bot Information
                         .card-body
-                            div <!-- Bot Information -->
-                                h1.inline-block#BotName
-                                span.bot-status#BotStatus
-
                             div#BotActions.top-pad-20 <!-- Bot Actions --> 
                                 a(data-bot-id="" data-action="start").btn.btn-success <i class="fa fa-play"></i>Start
                                 a(data-bot-id="" data-action="stop").btn.btn-warning <i class="fa fa-stop"></i> Stop
@@ -78,6 +74,20 @@ block body
                                             input(type="text" name="openai_org_id" placeholder="OpenAI Organization ID")
 
                                             input(type="submit" value="Save")
+
+                    .card <!-- Bot Logs --> 
+                        .card-body-skinny
+                            table(name="bot_logs").table-control
+                                tr
+                                    th Date / Time
+                                    th Type
+                                    th Message
+                                if logs
+                                    each log in logs
+                                        tr
+                                            td #{log.date.toString()}
+                                            td #{log.type}
+                                            td #{log.message}
 
 block js
     script(src="/public/js/bots.js")

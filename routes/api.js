@@ -5,6 +5,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
+const util = require('node:util');
 
 const routerUtils = require("./_utils.js");
 const botManager = require("../modules/bot_manager.js");
@@ -307,7 +308,7 @@ router.all("/personality/", routerUtils.api_auth_check(), jsonParser, async (req
 
 
 router.all("/logs/", routerUtils.api_auth_check(), jsonParser, async (req, res) => {
-    const { id } = (req.method == "GET" ? req.params : req.body);
+    const { id } = (req.method == "GET" ? req.query : req.body);
 
     if (req.method == "DELETE") {
         if (!id) return res.status(400).send({ success: false, message: "Parameter 'id' is non-existant." });
@@ -326,6 +327,16 @@ router.all("/logs/", routerUtils.api_auth_check(), jsonParser, async (req, res) 
             } catch (err) {
                 return res.status(500).send({ success: false, message: "Internal Server Error." });
             }
+        }
+    }
+    if (req.method == "GET") {
+        if (!id) return res.status(400).send({ success: false, message: "Parameter 'id' is non-existant." });
+
+        try {
+            const db_logs = await mongoose.model("LOG").find({ bot: id }).limit(25).sort({ "date": -1 }).exec();
+            return res.send({ success: true, logs: db_logs });
+        } catch (err) {
+            return res.status(500).send({ success: false, message: "Internal Server Error." });
         }
     }
 });
