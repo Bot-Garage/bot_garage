@@ -2,7 +2,6 @@
 // |   Module Imports   |
 // +--------------------+
 const mongoose = require("mongoose");
-const util = require("util");
 const discordjs = require("discord.js");
 const OpenAI = require("./openai.js");
 const Log = require("../models/log.js");
@@ -48,18 +47,18 @@ class C_Bot {
             openai_org_id = db_bot.openai_org_id;
 
         } catch (err) {
-            Log.LogBotError("[" + pBot.bot_id + "] Update OpenAI failed due to database error.", pBot.bot_id);
+            Log.LogBotError("Update OpenAI failed due to database error.", pBot.bot_id);
             console.error(err);
             return false;
         }
 
         if (!openai_api_key) {
-            Log.LogBotError("[" + pBot.bot_id + "] Can't update OpenAI due to API Key missing.", pBot.bot_id);
+            Log.LogBotError("Can't update OpenAI due to API Key missing.", pBot.bot_id);
             return false;
         }
 
         if (!openai_org_id) {
-            Log.LogBotError("[" + pBot.bot_id + "] Can't update OpenAI due to Organization ID missing.", pBot.bot_id);
+            Log.LogBotError("Can't update OpenAI due to Organization ID missing.", pBot.bot_id);
             return false;
         }
 
@@ -99,7 +98,7 @@ class C_Bot {
             try {
                 await mongoose.model("MESSAGE").createFromDiscord(message);
             } catch (err) {
-                Log.LogBotError("[" + pBot.bot_id + "] Failed to save message.", pBot.bot_id);
+                Log.LogBotError("Failed to save message.", pBot.bot_id);
                 console.error(err);
             }
 
@@ -147,7 +146,7 @@ class C_Bot {
             // Prerequisites 
             await pBot.update_openai();
             if (!pBot.openai || !pBot.openai.ChatCompletion) {
-                Log.LogBotError("[" + pBot.bot_id + "] Failed to create OpenAI Client.", pBot.bot_id);
+                Log.LogBotError("Failed to create OpenAI Client.", pBot.bot_id);
                 return;
             }
 
@@ -195,7 +194,7 @@ class C_Bot {
             try {
                 openai_reply = await pBot.openai.ChatCompletion({ messages });
             } catch (err) {
-                Log.LogBotError("[" + pBot.bot_id + "] Failed to get OpenAI Reply.", pBot.bot_id);
+                Log.LogBotError("Failed to get OpenAI Reply.", pBot.bot_id);
                 console.error(err);
                 return;
             }
@@ -221,7 +220,7 @@ class C_Bot {
                     if (db_guild) bot_guilds.push(db_guild);
                 });
             } catch (err) {
-                Log.LogBotError("[" + pBot.bot_id + "] Failed to query database.", pBot.bot_id);
+                Log.LogBotError("Failed to query database.", pBot.bot_id);
                 console.error(err);
                 return;
             }
@@ -236,13 +235,12 @@ class C_Bot {
                 db_bot.guilds = bot_guilds;
                 db_bot.save();
             } catch (err) {
-                Log.LogBotError("[" + pBot.bot_id + "] Failed to update bots guilds.", pBot.bot_id);
+                Log.LogBotError("Failed to update bots guilds.", pBot.bot_id);
                 console.error(err);
             }
-
-            Log.LogBot("[" + pBot.bot_id + "] '" + client.user.username + "' started.", pBot.bot_id);
         });
     }
+
 
 
     // +-----------------------------+
@@ -257,7 +255,7 @@ class C_Bot {
             bot_db = await mongoose.model("BOT").findById(pBot.bot_id).exec()
         }
         catch (err) {
-            Log.LogBotError("[" + pBot.bot_id + "] Failed to update bots guilds.", pBot.bot_id);
+            Log.LogBotError("Failed to update bots guilds.", pBot.bot_id);
             console.error(err);
             return false;
         }
@@ -272,6 +270,7 @@ class C_Bot {
 
             await bot_db.save();
             console.error("Failed to start bot '" + bot_db.id + "' because 'discord_client_token' is invalid.")
+            Log.LogBotError("Failed to start due to the Discord Client Token being invalid.", pBot.bot_id);
             return false;
         }
 
@@ -282,6 +281,7 @@ class C_Bot {
         try {
             await this.discord_client.login(bot_db.discord_client_token);
         } catch (err) {
+            Log.LogBotError("Failed to login to Discord. Check Discord Client Token.", pBot.bot_id);
             bot_db.started = false;
             bot_db.stopped = true;
             await bot_db.save();
@@ -293,6 +293,8 @@ class C_Bot {
         bot_db.started = true;
         bot_db.stopped = false;
         await bot_db.save();
+
+        Log.LogBot("Started successfully.", pBot.bot_id);
         return true;
     }
 
@@ -301,6 +303,8 @@ class C_Bot {
     // |   Function: C_Bot:stop()   |
     // +----------------------------+
     async stop() {
+        const pBot = this;
+
         // Destroy connection
         if (this.discord_client) {
             await this.discord_client.destroy();
@@ -309,18 +313,17 @@ class C_Bot {
         // Delete Object
         delete this.discord_client;
 
-        // Null Client
-        this.discord_client = null;
-
         // Update database
         try {
-            const bot_db_info = await Bot.findById(this.bot_id).exec();
-            bot_db_info.started = false;
-            await bot_db_info.save();
+            const db_bot = await mongoose.model("BOT").findById(pBot.bot_id).exec();
+            db_bot.started = false;
+            await db_bot.save();
         } catch {
+            Log.LogBotError("Failed to stop bot due to database error.", pBot.bot_id);
             return false;
         }
 
+        Log.LogBot("Stopped successfully.", pBot.bot_id);
         return true;
     }
 }
